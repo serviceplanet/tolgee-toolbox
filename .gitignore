@@ -1,0 +1,59 @@
+# Built ndroid application files
+*.apk
+*.ap_
+bin/
+gen/
+
+# Log files
+*.log
+*.log.[1-9]
+
+# Java class files
+*.class
+
+# Maven build directory
+target/
+
+# Maven release plugin temp files
+pom.xml.releaseBackup
+pom.xml.versionsBackup
+release.properties
+
+# META-INF
+META-INF/
+# Do not ignore the META-INF in the maven resource directory
+!*/src/main/resources/META-INF/
+
+# Ignore other version control systems
+.svn/
+/CVS/*
+*/CVS/*
+.cvsignore
+*/.cvsignore
+
+# Eclipse files
+.settings/
+.classpath
+.project
+.buildpath
+.metadata
+
+# Intellij files
+*.iml
+*.ipr
+*.iws
+.idea/
+
+# Vim temporary files
+.*.sw[a-z]
+*.un~
+Session.vim
+
+# OS generated files
+.DS_Store*
+ehthumbs.db
+Icon?
+Thumbs.db
+
+# Temporary ODS files
+*.ods#

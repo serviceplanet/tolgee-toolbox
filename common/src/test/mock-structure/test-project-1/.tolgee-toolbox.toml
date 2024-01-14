@@ -1,0 +1,13 @@
+[tolgee]
+api.url = "http://127.0.0.1:8080"
+
+# Multiple projects can be specified
+[[project]]
+# ID of the Tolgee project.
+tolgee.project.id = ""
+# Optional namespace to use in the Tolgee project.
+tolgee.namespace = ""
+# Glob pattern to find all localization files.
+files.glob = ""
+# Regex to extract an IETF BCP 47 language tag from files matching the 'files_glob' attribute.
+files.lang_regex = ""
