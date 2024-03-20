@@ -15,23 +15,33 @@
  */
 package nl.serviceplanet.tolgee.toolbox.common.config.api;
 
-import com.google.common.collect.ImmutableSet;
-
-import java.io.IOException;
-import java.nio.file.Path;
-
 /**
- * Handles interaction with the {@code .tolgee-toolbox} files.
+ * Indicates no valid project configuration could be read from a {@code .tolgee-toolbox} file.
  *
  * @author Jasper Siepkes <siepkes@serviceplanet.nl>
  */
-public interface ConfigService {
+public final class IllegalProjectException extends RuntimeException {
 
-	/**
-	 * Reads all configuration files in all subdirectories. Starting from the specified base path.
-	 */
-	ImmutableSet<Project> loadProjects(Path basePath) throws IOException;
+	public IllegalProjectException() {
+		super();
+	}
 
-	char[] getTolgeeApiKey();
+	public IllegalProjectException(String message) {
+		super(message);
+	}
+
+	public IllegalProjectException(String message, Throwable cause) {
+		super(message, cause);
+	}
+
+	public IllegalProjectException(Throwable cause) {
+		super(cause);
+	}
+
+	protected IllegalProjectException(String message, Throwable cause,
+									  boolean enableSuppression,
+									  boolean writableStackTrace) {
+		super(message, cause, enableSuppression, writableStackTrace);
+	}
 
 }

@@ -13,25 +13,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package nl.serviceplanet.tolgee.toolbox.common.config.api;
+package nl.serviceplanet.tolgee.toolbox.common.rest.api.json;
 
-import com.google.common.collect.ImmutableSet;
+import com.google.gson.annotations.SerializedName;
 
-import java.io.IOException;
-import java.nio.file.Path;
+public final class ProjectLanguagesResp {
 
-/**
- * Handles interaction with the {@code .tolgee-toolbox} files.
- *
- * @author Jasper Siepkes <siepkes@serviceplanet.nl>
- */
-public interface ConfigService {
+	@SerializedName("_embedded")
+	private ProjectLanguagesRespEmbedded embedded;
 
-	/**
-	 * Reads all configuration files in all subdirectories. Starting from the specified base path.
-	 */
-	ImmutableSet<Project> loadProjects(Path basePath) throws IOException;
+	public ProjectLanguagesRespEmbedded getEmbedded() {
+		return embedded;
+	}
 
-	char[] getTolgeeApiKey();
-
+	public void setEmbedded(ProjectLanguagesRespEmbedded embedded) {
+		this.embedded = embedded;
+	}
 }

@@ -13,25 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package nl.serviceplanet.tolgee.toolbox.common.config.api;
+package nl.serviceplanet.tolgee.toolbox.cli.picocli;
 
-import com.google.common.collect.ImmutableSet;
+import picocli.CommandLine;
 
-import java.io.IOException;
-import java.nio.file.Path;
-
-/**
- * Handles interaction with the {@code .tolgee-toolbox} files.
- *
- * @author Jasper Siepkes <siepkes@serviceplanet.nl>
- */
-public interface ConfigService {
-
-	/**
-	 * Reads all configuration files in all subdirectories. Starting from the specified base path.
-	 */
-	ImmutableSet<Project> loadProjects(Path basePath) throws IOException;
-
-	char[] getTolgeeApiKey();
-
+@CommandLine.Command(
+		name = "toolgee-toolbox",
+		subcommands = { PullCommand.class, PushCommand.class },
+		description = "Tolgee Toolbox is an application to interact with a Tolgee installation."
+)
+public final class TolgeeToolboxCommand {
+	
+	
+	
 }

@@ -1,0 +1,3 @@
+[general]
+# Stop if a project has no namespace specified. Prevents accidents.
+missing_namespace_fail = true

@@ -13,25 +13,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package nl.serviceplanet.tolgee.toolbox.common.config.api;
+package nl.serviceplanet.tolgee.toolbox.cli.dagger;
 
-import com.google.common.collect.ImmutableSet;
+import dagger.Component;
+import jakarta.inject.Singleton;
+import nl.serviceplanet.tolgee.toolbox.cli.Main;
 
-import java.io.IOException;
-import java.nio.file.Path;
 
 /**
- * Handles interaction with the {@code .tolgee-toolbox} files.
+ * Creates the root Dagger component graph of the Tolgee toolbox application.
  *
  * @author Jasper Siepkes <siepkes@serviceplanet.nl>
  */
-public interface ConfigService {
+@Component(
+		modules = { ApplicationModule.class }
+)
+@Singleton
+public interface ApplicationComponent {
 
-	/**
-	 * Reads all configuration files in all subdirectories. Starting from the specified base path.
-	 */
-	ImmutableSet<Project> loadProjects(Path basePath) throws IOException;
-
-	char[] getTolgeeApiKey();
+	Main main();
 
 }

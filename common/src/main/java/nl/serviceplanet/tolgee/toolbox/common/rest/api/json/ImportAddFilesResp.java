@@ -13,25 +13,31 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package nl.serviceplanet.tolgee.toolbox.common.config.api;
+package nl.serviceplanet.tolgee.toolbox.common.rest.api.json;
 
-import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.ImmutableList;
 
-import java.io.IOException;
-import java.nio.file.Path;
+import java.util.List;
 
-/**
- * Handles interaction with the {@code .tolgee-toolbox} files.
- *
- * @author Jasper Siepkes <siepkes@serviceplanet.nl>
- */
-public interface ConfigService {
+public final class ImportAddFilesResp {
 
-	/**
-	 * Reads all configuration files in all subdirectories. Starting from the specified base path.
-	 */
-	ImmutableSet<Project> loadProjects(Path basePath) throws IOException;
+	private List<String> errors = ImmutableList.of();
 
-	char[] getTolgeeApiKey();
+	private ImportAddFilesResult result;
 
+	public List<String> getErrors() {
+		return errors;
+	}
+
+	public void setErrors(List<String> errors) {
+		this.errors = errors;
+	}
+
+	public ImportAddFilesResult getResult() {
+		return result;
+	}
+
+	public void setResult(ImportAddFilesResult result) {
+		this.result = result;
+	}
 }

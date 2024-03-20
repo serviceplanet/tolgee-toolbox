@@ -13,25 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package nl.serviceplanet.tolgee.toolbox.common.config.api;
+package nl.serviceplanet.tolgee.toolbox.common.model;
 
-import com.google.common.collect.ImmutableSet;
+import java.util.Locale;
 
-import java.io.IOException;
-import java.nio.file.Path;
-
-/**
- * Handles interaction with the {@code .tolgee-toolbox} files.
- *
- * @author Jasper Siepkes <siepkes@serviceplanet.nl>
- */
-public interface ConfigService {
-
-	/**
-	 * Reads all configuration files in all subdirectories. Starting from the specified base path.
-	 */
-	ImmutableSet<Project> loadProjects(Path basePath) throws IOException;
-
-	char[] getTolgeeApiKey();
-
+public record TolgeeProjectLanguage(long tolgeeId, Locale locale) {
 }

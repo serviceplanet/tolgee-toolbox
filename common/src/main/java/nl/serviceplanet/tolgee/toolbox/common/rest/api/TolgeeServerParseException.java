@@ -13,25 +13,28 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package nl.serviceplanet.tolgee.toolbox.common.config.api;
-
-import com.google.common.collect.ImmutableSet;
-
-import java.io.IOException;
-import java.nio.file.Path;
+package nl.serviceplanet.tolgee.toolbox.common.rest.api;
 
 /**
- * Handles interaction with the {@code .tolgee-toolbox} files.
- *
+ * Indicates we are unable to understand the response the Tolgee server send us.
+ * 
  * @author Jasper Siepkes <siepkes@serviceplanet.nl>
  */
-public interface ConfigService {
+public final class TolgeeServerParseException extends TolgeeServerCommunicationException {
 
-	/**
-	 * Reads all configuration files in all subdirectories. Starting from the specified base path.
-	 */
-	ImmutableSet<Project> loadProjects(Path basePath) throws IOException;
+	public TolgeeServerParseException() {
+	}
 
-	char[] getTolgeeApiKey();
+	public TolgeeServerParseException(String message) {
+		super(message);
+	}
 
+	public TolgeeServerParseException(String message, Throwable cause) {
+		super(message, cause);
+	}
+
+	public TolgeeServerParseException(Throwable cause) {
+		super(cause);
+	}
+	
 }

@@ -17,21 +17,20 @@ package nl.serviceplanet.tolgee.toolbox.common.config.api;
 
 import com.google.common.collect.ImmutableSet;
 
-import java.io.IOException;
+import java.net.URI;
 import java.nio.file.Path;
 
 /**
- * Handles interaction with the {@code .tolgee-toolbox} files.
- *
+ * Represents a project specified in a {@code .tolgee-toolbox.toml} file.
+ *                        
  * @author Jasper Siepkes <siepkes@serviceplanet.nl>
  */
-public interface ConfigService {
-
-	/**
-	 * Reads all configuration files in all subdirectories. Starting from the specified base path.
-	 */
-	ImmutableSet<Project> loadProjects(Path basePath) throws IOException;
-
-	char[] getTolgeeApiKey();
-
-}
+public record Project(
+		Path projectPath,
+		URI tolgeeApiURI,
+		boolean missingNamespaceFail,
+		String namespace,
+		long tolgeeProjectId,
+		ImmutableSet<ProjectFile> projectFiles,
+		ImmutableSet<ProjectFile> projectTargets
+) {}

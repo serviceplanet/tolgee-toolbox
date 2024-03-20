@@ -1,0 +1,17 @@
+[tolgee]
+api.url = "http://127.0.0.1:8080"
+
+[general]
+missing_namespace_fail = false
+
+[[projects]]
+tolgee.id = 14684
+tolgee.namespace = "tolgee.frontend"
+
+[[projects.sources]] 
+files = "Messages_${locale separator=underscore, region_case=upper}.properties"
+type = "property"
+
+[[projects.targets]] 
+files = "Messages_${locale separator=underscore, region_case=lower}.xlf"
+type = "xliff"

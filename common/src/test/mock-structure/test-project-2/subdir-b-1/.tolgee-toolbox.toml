@@ -1,0 +1,4 @@
+[tolgee]
+# Location of Tolgee REST API.
+api.url = "http://127.0.0.1:8080"
+

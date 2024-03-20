@@ -13,25 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package nl.serviceplanet.tolgee.toolbox.common.config.api;
+package nl.serviceplanet.tolgee.toolbox.common.rest.api.json;
 
-import com.google.common.collect.ImmutableSet;
+public final class ImportSelectNamespaceReq {
+	
+	private String namespace;
 
-import java.io.IOException;
-import java.nio.file.Path;
+	public String getNamespace() {
+		return namespace;
+	}
 
-/**
- * Handles interaction with the {@code .tolgee-toolbox} files.
- *
- * @author Jasper Siepkes <siepkes@serviceplanet.nl>
- */
-public interface ConfigService {
-
-	/**
-	 * Reads all configuration files in all subdirectories. Starting from the specified base path.
-	 */
-	ImmutableSet<Project> loadProjects(Path basePath) throws IOException;
-
-	char[] getTolgeeApiKey();
-
+	public void setNamespace(String namespace) {
+		this.namespace = namespace;
+	}
 }

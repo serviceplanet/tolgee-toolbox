@@ -15,23 +15,12 @@
  */
 package nl.serviceplanet.tolgee.toolbox.common.config.api;
 
-import com.google.common.collect.ImmutableSet;
-
-import java.io.IOException;
-import java.nio.file.Path;
+import java.util.Locale;
 
 /**
- * Handles interaction with the {@code .tolgee-toolbox} files.
+ * Represents a project message sources and message targets in the {@code .tolgee-toolbox.toml} file.
  *
  * @author Jasper Siepkes <siepkes@serviceplanet.nl>
  */
-public interface ConfigService {
-
-	/**
-	 * Reads all configuration files in all subdirectories. Starting from the specified base path.
-	 */
-	ImmutableSet<Project> loadProjects(Path basePath) throws IOException;
-
-	char[] getTolgeeApiKey();
-
+public record ProjectFile(ProjectFilesDefinition files, String type, Locale locale) {
 }

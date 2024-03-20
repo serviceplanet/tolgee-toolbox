@@ -13,25 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package nl.serviceplanet.tolgee.toolbox.common.config.api;
-
-import com.google.common.collect.ImmutableSet;
+package nl.serviceplanet.tolgee.toolbox.common.services.api;
 
 import java.io.IOException;
 import java.nio.file.Path;
 
-/**
- * Handles interaction with the {@code .tolgee-toolbox} files.
- *
- * @author Jasper Siepkes <siepkes@serviceplanet.nl>
- */
-public interface ConfigService {
+public interface PushService {
 
 	/**
-	 * Reads all configuration files in all subdirectories. Starting from the specified base path.
+	 * Pushes all message files of a specified project location to Tolgee. Meaning they are processed by the 
+	 * "Import" functionality in Tolgee.
 	 */
-	ImmutableSet<Project> loadProjects(Path basePath) throws IOException;
-
-	char[] getTolgeeApiKey();
-
+	void pushMessages(Path basePath) throws IOException;
+	
 }
