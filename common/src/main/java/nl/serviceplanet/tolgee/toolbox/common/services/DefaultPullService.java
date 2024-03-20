@@ -67,35 +67,39 @@ public final class DefaultPullService extends AbstractService implements PullSer
 					.filter(tolgeeNamespace -> tolgeeNamespace.name().equals(project.namespace()))
 					.findFirst();
 
-			if (tolgeeNamespaceOpt.isPresent()) {
-				for (TolgeeProjectLanguage tolgeeProjectLanguage : tolgeeProjectLanguages) {
-					for (ProjectFile targetProjectFile : project.projectTargets()) {
-						if (targetProjectFile.excludedLocales().contains(tolgeeProjectLanguage.locale())) {
-							// If the locale has been specified as to be excluded, skip it.
-							continue;
-						}
+			if (project.missingNamespaceFail() && tolgeeNamespaceOpt.isEmpty()) {
+				throw new IllegalStateException(
+						String.format("Project with ID %s is missing a name space definition while namespace is configured as mandatory.",
+						project.tolgeeProjectId()));
+			}
 
-						StringBuilder targetFile = new StringBuilder(targetProjectFile.files().projectFileDefinition());
-						for (LocalePlaceholder localePlaceholder : targetProjectFile.files().localePlaceholders()) {
-							int index = targetFile.indexOf(localePlaceholder.placeholder());
-
-							String localeString = localePlaceholder.convertToString(tolgeeProjectLanguage.locale());
-							targetFile.replace(index, index + localePlaceholder.placeholder().length(), localeString);
-						}
-
-						Path messageFilePath = project.projectPath().resolve(targetFile.toString());
-
-						log.trace("Downloading translations for project ID {} and namespace '{}' to: '{}'.",
-								project.tolgeeProjectId(), project.namespace(), messageFilePath);
-						tolgeeRestClient.export(project.tolgeeApiURI(),
-								configService.getTolgeeApiKey(),
-								project.tolgeeProjectId(),
-								tolgeeProjectLanguage.locale(),
-								project.namespace(),
-								// FIXME: USE CONFIGURED FORMAT.
-								MessageFormat.PROPERTIES,
-								messageFilePath);
+			for (TolgeeProjectLanguage tolgeeProjectLanguage : tolgeeProjectLanguages) {
+				for (ProjectFile targetProjectFile : project.projectTargets()) {
+					if (targetProjectFile.excludedLocales().contains(tolgeeProjectLanguage.locale())) {
+						// If the locale has been specified as to be excluded, skip it.
+						continue;
 					}
+
+					StringBuilder targetFile = new StringBuilder(targetProjectFile.files().projectFileDefinition());
+					for (LocalePlaceholder localePlaceholder : targetProjectFile.files().localePlaceholders()) {
+						int index = targetFile.indexOf(localePlaceholder.placeholder());
+
+						String localeString = localePlaceholder.convertToString(tolgeeProjectLanguage.locale());
+						targetFile.replace(index, index + localePlaceholder.placeholder().length(), localeString);
+					}
+
+					Path messageFilePath = project.projectPath().resolve(targetFile.toString());
+
+					log.trace("Downloading translations for project ID {} and namespace '{}' to: '{}'.",
+							project.tolgeeProjectId(), project.namespace(), messageFilePath);
+					tolgeeRestClient.export(project.tolgeeApiURI(),
+							configService.getTolgeeApiKey(),
+							project.tolgeeProjectId(),
+							tolgeeProjectLanguage.locale(),
+							project.namespace(),
+							// FIXME: USE CONFIGURED FORMAT.
+							MessageFormat.PROPERTIES,
+							messageFilePath);
 				}
 			}
 		}

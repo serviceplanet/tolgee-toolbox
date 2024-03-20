@@ -60,6 +60,12 @@ public final class DefaultPushService extends AbstractService implements PushSer
 					project.tolgeeProjectId());
 
 			for (MessageFile messageFile : messageFiles) {
+				if (project.missingNamespaceFail() && Strings.isNullOrEmpty(project.namespace())) {
+					throw new IllegalStateException(
+							String.format("Project with ID %s is missing a name space definition while namespace is configured as mandatory.",
+									project.tolgeeProjectId()));
+				}
+
 				// FIXME: Validate if we found a valid set of files.
 
 				// We prefix the filename with a UUID, so we can later find the "importFileID" of the file we just
