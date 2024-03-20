@@ -49,7 +49,7 @@ public final class TomlConfigService extends AbstractConfigService implements Co
 
 	private static final Logger log = LoggerFactory.getLogger(TomlConfigService.class);
 
-	private static final String TOLGEE_TOOLBOX = ".tolgee-toolbox.toml";
+	private static final String TOLGEE_TOOLBOX = "tolgee-toolbox.toml";
 	
 	@Inject
 	public TomlConfigService() {

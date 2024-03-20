@@ -21,7 +21,7 @@ import java.net.URI;
 import java.nio.file.Path;
 
 /**
- * Represents a project specified in a {@code .tolgee-toolbox.toml} file.
+ * Represents a project specified in a {@code tolgee-toolbox.toml} file.
  *                        
  * @author Jasper Siepkes <siepkes@serviceplanet.nl>
  */

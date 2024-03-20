@@ -12,11 +12,11 @@ The minimum supported Java version by this tool is 21.
 
 # Usage
 
-The tolgee-toolbox application primarily works with configuration files called `.tolgee-toolbox.toml` which are written in [TOML](https://toml.io/).
+The tolgee-toolbox application primarily works with configuration files called `tolgee-toolbox.toml` which are written in [TOML](https://toml.io/).
 
-Each project is expected to have at least a single `.tolgee-toolbox.toml` configuration file to tell these utilities how to interact with Tolgee (see an example below). `.tolgee-toolbox.toml` files which contain a `[[projects]]` table should be placed in the directory along side the message files.
+Each project is expected to have at least a single `tolgee-toolbox.toml` configuration file to tell these utilities how to interact with Tolgee (see an example below). `tolgee-toolbox.toml` files which contain a `[[projects]]` table should be placed in the directory along side the message files.
 
-Example `.tolgee-toolbox.toml`:
+Example `tolgee-toolbox.toml`:
 
 ```toml
 # Defines configuration on how to interact with the Tolgee server.
@@ -80,18 +80,18 @@ type = "property"
 locale = "nl-NL"
 ```
 
-`.tolgee-toolbox.toml` Files in child directories inherit settings from parent directories and can override these settings. Take a look at the following example:
+`tolgee-toolbox.toml` Files in child directories inherit settings from parent directories and can override these settings. Take a look at the following example:
 
 ```
 my-project/
 ├─ module-a/
-│  ├─ .tolgee-toolbox.toml     
+│  ├─ tolgee-toolbox.toml     
 ├─ module-b/
-│  ├─ .tolgee-toolbox.toml
-├─ .tolgee-toolbox.toml
+│  ├─ tolgee-toolbox.toml
+├─ tolgee-toolbox.toml
 ```
 
-`module-a/.tolgee-toolbox.toml` and `module-b/.tolgee-toolbox.toml` inherit the `[tolgee]` and `[general]` sections from the `my-project/.tolgee-toolbox.toml` file.
+`module-a/tolgee-toolbox.toml` and `module-b/tolgee-toolbox.toml` inherit the `[tolgee]` and `[general]` sections from the `my-project/tolgee-toolbox.toml` file.
 
 You can then use the `tolgee-toolbox` tool in the project root (`my-project/`) to push and pull translations to Tolgee.
 
@@ -114,7 +114,7 @@ my-project/
 │  │        ├─ Messages.properties
 │  │        ├─ Messages_nl_NL.properties
 │  │        ├─ Messages_de_DE.properties
-│  │        └─ .tolgee-toolbox.toml 
+│  │        └─ tolgee-toolbox.toml 
 │  └─ pom.xml 
 ├─ module-b/
 │  ├─ src
@@ -123,22 +123,22 @@ my-project/
 │  │        ├─ Messages.properties
 │  │        ├─ Messages_nl_NL.properties
 │  │        ├─ Messages_de_DE.properties
-│  │        └─ .tolgee-toolbox.toml 
+│  │        └─ tolgee-toolbox.toml 
 │  └─ pom.xml
 ├─ pom.xml
-└─ .tolgee-toolbox.toml
+└─ tolgee-toolbox.toml
 ```
 
 **Config files:**
 
-`my-project/.tolgee-toolbox.toml`:
+`my-project/tolgee-toolbox.toml`:
 ```toml
 [tolgee]
 # Location of Tolgee REST API.
 api.url = "http://127.0.0.1:8080"
 ```
 
-`my-project/module-a/src/main/resources/.tolgee-toolbox.toml`:
+`my-project/module-a/src/main/resources/tolgee-toolbox.toml`:
 
 ```toml
 [[projects.sources]]
@@ -156,7 +156,7 @@ files = "Messages_${locale separator=underscore, region_case=upper}.properties"
 type = "property"
 ```
 
-`my-project/module-b/src/main/resources/.tolgee-toolbox.toml`:
+`my-project/module-b/src/main/resources/tolgee-toolbox.toml`:
 
 ```toml
 [[projects.sources]]

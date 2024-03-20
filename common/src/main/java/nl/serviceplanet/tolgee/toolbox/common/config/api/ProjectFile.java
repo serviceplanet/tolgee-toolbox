@@ -20,7 +20,7 @@ import com.google.common.collect.ImmutableSet;
 import java.util.Locale;
 
 /**
- * Represents a project message sources and message targets in the {@code .tolgee-toolbox.toml} file.
+ * Represents a project message sources and message targets in the {@code tolgee-toolbox.toml} file.
  *
  * @author Jasper Siepkes <siepkes@serviceplanet.nl>
  */
