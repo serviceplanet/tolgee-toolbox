@@ -25,7 +25,6 @@ import nl.serviceplanet.tolgee.toolbox.common.config.api.Project;
 import nl.serviceplanet.tolgee.toolbox.common.config.api.ProjectFile;
 import nl.serviceplanet.tolgee.toolbox.common.model.TolgeeProjectLanguage;
 import nl.serviceplanet.tolgee.toolbox.common.model.TolgeeNamespace;
-import nl.serviceplanet.tolgee.toolbox.common.model.MessageFormat;
 import nl.serviceplanet.tolgee.toolbox.common.rest.api.TolgeeRestClient;
 import nl.serviceplanet.tolgee.toolbox.common.services.api.PullService;
 import org.slf4j.Logger;
@@ -97,8 +96,7 @@ public final class DefaultPullService extends AbstractService implements PullSer
 							project.tolgeeProjectId(),
 							tolgeeProjectLanguage.locale(),
 							project.namespace(),
-							// FIXME: USE CONFIGURED FORMAT.
-							MessageFormat.PROPERTIES,
+							targetProjectFile.messageFormatType(),
 							messageFilePath);
 				}
 			}

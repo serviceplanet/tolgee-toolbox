@@ -22,7 +22,7 @@ import com.google.gson.Gson;
 import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
 import nl.serviceplanet.tolgee.toolbox.common.config.api.ConfigService;
-import nl.serviceplanet.tolgee.toolbox.common.model.MessageFormat;
+import nl.serviceplanet.tolgee.toolbox.common.model.MessageFormatType;
 import nl.serviceplanet.tolgee.toolbox.common.model.TolgeeImportLanguage;
 import nl.serviceplanet.tolgee.toolbox.common.model.TolgeeNamespace;
 import nl.serviceplanet.tolgee.toolbox.common.model.TolgeeProjectLanguage;
@@ -255,7 +255,7 @@ public final class GsonTolgeeRestClient implements TolgeeRestClient {
 					   long projectId,
 					   Locale locale,
 					   String namespace,
-					   MessageFormat messageFormat,
+					   MessageFormatType messageFormatType,
 					   Path savePath) throws IOException {
 
 		try (CloseableHttpClient httpClient = createHttpClient()) {
@@ -265,7 +265,7 @@ public final class GsonTolgeeRestClient implements TolgeeRestClient {
 
 			Export exportJson = new Export();
 			exportJson.setLanguages(ImmutableList.of(localeToTolgeeTag(locale)));
-			exportJson.setFormat(messageFormat.getTolgeeName());
+			exportJson.setFormat(messageFormatType.toString());
 			exportJson.setFilterNamespace(ImmutableList.of(namespace));
 
 			HttpEntity stringEntity = new StringEntity(gson.toJson(exportJson), ContentType.APPLICATION_JSON);

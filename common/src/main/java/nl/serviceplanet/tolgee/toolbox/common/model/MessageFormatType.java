@@ -15,19 +15,18 @@
  */
 package nl.serviceplanet.tolgee.toolbox.common.model;
 
-public enum MessageFormat {
-
-	PROPERTIES("PROPERTIES"),
-	XLIFF("XLIFF");
-
-	/** Name of the format in the Tolgee API. */
-	private final String tolgeeName;
-
-	MessageFormat(String tolgeeName) {
-		this.tolgeeName = tolgeeName;
-	}
-
-	public String getTolgeeName() {
-		return tolgeeName;
-	}
+/**
+ * Message format messageFormatType as defined by Tolgee.
+ *
+ * @author Jasper Siepkes <siepkes@serviceplanet.n>
+ */
+public enum MessageFormatType {
+	JSON,
+	PO,
+	APPLE_STRINGS_STRINGSDICT,
+	APPLE_XLIFF,
+	ANDROID_XML,
+	FLUTTER_ARB,
+	PROPERTIES,
+	XLIFF;
 }

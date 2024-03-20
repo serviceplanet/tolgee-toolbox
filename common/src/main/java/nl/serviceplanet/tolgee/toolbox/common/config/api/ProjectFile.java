@@ -16,6 +16,7 @@
 package nl.serviceplanet.tolgee.toolbox.common.config.api;
 
 import com.google.common.collect.ImmutableSet;
+import nl.serviceplanet.tolgee.toolbox.common.model.MessageFormatType;
 
 import java.util.Locale;
 
@@ -25,7 +26,7 @@ import java.util.Locale;
  * @author Jasper Siepkes <siepkes@serviceplanet.nl>
  */
 public record ProjectFile(ProjectFilesDefinition files,
-						  String type,
+						  MessageFormatType messageFormatType,
 						  Locale locale,
 						  ImmutableSet<Locale> excludedLocales) {
 }

@@ -22,6 +22,7 @@ import nl.serviceplanet.tolgee.toolbox.common.config.api.Project;
 import nl.serviceplanet.tolgee.toolbox.common.config.api.ProjectFile;
 import nl.serviceplanet.tolgee.toolbox.common.config.api.ProjectFilesDefinition;
 import nl.serviceplanet.tolgee.toolbox.common.config.toml.TomlConfigService;
+import nl.serviceplanet.tolgee.toolbox.common.model.MessageFormatType;
 import org.junit.jupiter.api.Test;
 
 import java.net.URI;
@@ -59,11 +60,11 @@ public final class TomConfigServiceTest {
 						"tolgee.server.backend",
 						42341,
 						ImmutableSet.of(new ProjectFile(projectSourceFiles,
-								"property",
+								MessageFormatType.PROPERTIES,
 								Locale.of("nl", "NL"),
 								ImmutableSet.of())),
 						ImmutableSet.of(new ProjectFile(projectTargetFiles,
-								"property",
+								MessageFormatType.PROPERTIES,
 								Locale.of("nl", "NL"),
 								ImmutableSet.of())))
 		);

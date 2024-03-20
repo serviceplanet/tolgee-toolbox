@@ -50,13 +50,10 @@ tolgee.namespace = "android.ui"
 [[projects.sources]]
 # Select source files based on a file pattern with placeholders. 
 files = "Messages_${locale separator=underscore, region_case=lower}.properties"
-# The file type. For example XLIFF, Java properties, etc.
-type = "property"
 
 [[projects.sources]]
 # Select a single source file (without using a placeholder).
 files = "Messages.properties"
-type = "property"
 # The locale is mandatory if there is no placeholder from which a locale can be extracted 
 # (i.e. no tag such as "${locale separator=underscore, region_case=lower}"). Must be specified as a IETF BCP 47 
 # language tag string.
@@ -66,7 +63,9 @@ locale = "nl-NL"
 [[projects.targets]]
 # Pattern used to create message target files. 
 files = "foo-directory_${locale separator=dash, region_case=upper}/Messages.properties"
-type = "property"
+# Message format to create. Possible types: "JSON", "XLIFF", "PO", "APPLE_STRINGS_STRINGSDICT", "APPLE_XLIFF", 
+# "ANDROID_XML", "FLUTTER_ARB" "PROPERTIES"
+type = "PROPERTIES"
 # Do not create translation files for these locales. Useful if for example there is a base language without a 
 # tag in the file name such as "Messages.properties". Must contain IETF BCP 47 language tag strings.
 excluded_locales = ["nl-NL"]
@@ -74,7 +73,7 @@ excluded_locales = ["nl-NL"]
 [[projects.targets]]
 # Select a single target file (without using a placeholder).
 files = "Messages.properties"
-type = "property"
+type = "PROPERTIES"
 # The locale is mandatory if there is no placeholder from which a locale can be extracted 
 # (for example "${locale_underscore_lower}")
 locale = "nl-NL"
@@ -144,7 +143,6 @@ api.url = "http://127.0.0.1:8080"
 [[projects.sources]]
 # Select a single source file (without using a placeholder).
 files = "Messages.properties"
-type = "property"
 # The locale is mandatory if there is no placeholder from which a locale can be extracted 
 # (i.e. no tag such as "${locale separator=underscore, region_case=lower}")
 locale = "en-US"
@@ -153,7 +151,9 @@ locale = "en-US"
 [[projects.targets]]
 # Pattern used to create message target files. 
 files = "Messages_${locale separator=underscore, region_case=upper}.properties"
-type = "property"
+# Message format to create. Possible types: "JSON", "XLIFF", "PO", "APPLE_STRINGS_STRINGSDICT", "APPLE_XLIFF", 
+# "ANDROID_XML", "FLUTTER_ARB" "PROPERTIES"
+type = "PROPERTIES"
 ```
 
 `my-project/module-b/src/main/resources/tolgee-toolbox.toml`:
@@ -162,7 +162,6 @@ type = "property"
 [[projects.sources]]
 # Select a single source file (without using a placeholder).
 files = "Messages.properties"
-type = "property"
 # The locale must be specified (and only be specified) if there is no placeholder from which a locale can be extracted 
 # (i.e. no tag such as "${locale separator=underscore, region_case=lower}")
 locale = "en-US"
@@ -171,7 +170,9 @@ locale = "en-US"
 [[projects.targets]]
 # Pattern used to create message target files. 
 files = "Messages_${locale separator=underscore, region_case=upper}.properties"
-type = "property"
+# Message format to create. Possible types: "JSON", "XLIFF", "PO", "APPLE_STRINGS_STRINGSDICT", "APPLE_XLIFF", 
+# "ANDROID_XML", "FLUTTER_ARB" "PROPERTIES"
+type = "PROPERTIES"
 ```
 
 Push (upload) translation files to Tolgee. This is similar to using the "Import" function in Tolgee:

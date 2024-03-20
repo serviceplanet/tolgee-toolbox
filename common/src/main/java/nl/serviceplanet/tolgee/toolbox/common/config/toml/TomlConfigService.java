@@ -25,6 +25,7 @@ import nl.serviceplanet.tolgee.toolbox.common.config.api.ConfigService;
 import nl.serviceplanet.tolgee.toolbox.common.config.api.Project;
 import nl.serviceplanet.tolgee.toolbox.common.config.api.ProjectFile;
 import nl.serviceplanet.tolgee.toolbox.common.config.api.ProjectFilesDefinition;
+import nl.serviceplanet.tolgee.toolbox.common.model.MessageFormatType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tomlj.Toml;
@@ -185,7 +186,8 @@ public final class TomlConfigService extends AbstractConfigService implements Co
 			TomlTable sources = sourcesArray.getTable(y);
 			
 			String files = sources.getString(TOML_PROJECTS_SRC_TAR_FILES);
-			String type = sources.getString(TOML_PROJECTS_SRC_TAR_TYPE);
+			MessageFormatType messageFormatType = MessageFormatType.valueOf(sources.getString(TOML_PROJECTS_SRC_TAR_TYPE));
+
 			Locale locale = null;
 			String localeString = sources.getString(TOML_PROJECTS_SRC_TAR_LOCALE);
 			if (!Strings.isNullOrEmpty(localeString)) {
@@ -200,7 +202,7 @@ public final class TomlConfigService extends AbstractConfigService implements Co
 
 			// FIXME: Check if combination is valid. Otherwise throw IllegalArgumentException.
 			
-			projectSources.add(new ProjectFile(projectFilesDefinition, type, locale, excludedLocales));
+			projectSources.add(new ProjectFile(projectFilesDefinition, messageFormatType, locale, excludedLocales));
 		}
 		
 		return projectSources.build();		
