@@ -16,7 +16,6 @@
 package nl.serviceplanet.tolgee.toolbox.common.config.toml;
 
 import com.google.common.base.Strings;
-import com.google.common.collect.ImmutableCollection;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 import jakarta.inject.Inject;
@@ -90,15 +89,6 @@ public final class TomlConfigService extends AbstractConfigService implements Co
 
 		return projects.build();
 	}
-
-	/** Placeholder for locales separated with a dash and the region in lower-case. For example {@code en-us}. */
-	private static final String LOCALE_DASH_LOWER = "${locale_dash_lower}";
-	/** Placeholder for locales separated with a dash and the region in upper-case. For example {@code en-US}. */
-	private static final String LOCALE_DASH_UPPER = "${locale_dash_upper}";
-	/** Placeholder for locales separated with an underscore and the region in lower-case. For example {@code en_us}. */
-	private static final String LOCALE_UNDERSCORE_LOWER = "${locale_underscore_lower}";
-	/** Placeholder for locales separated with an underscore and the region in upper-case. For example {@code en_US}. */
-	private static final String LOCALE_UNDERSCORE_UPPER = "${locale_underscore_upper}";
 	
 	private static final String TOML_TOLGEE_API_URL = "tolgee.api.url";
 	
@@ -117,6 +107,8 @@ public final class TomlConfigService extends AbstractConfigService implements Co
 	private static final String TOML_PROJECTS_SRC_TAR_TYPE = "type";
 
 	private static final String TOML_PROJECTS_SRC_TAR_LOCALE = "locale";
+
+	private static final String TOML_PROJECTS_EXCLUDED_LOCALES = "excluded_locales";
 	
 	/**
 	 * Creates {@link Project} instances based on the supplied {@code configFileHierarchy}. Only the projects for the
@@ -199,15 +191,31 @@ public final class TomlConfigService extends AbstractConfigService implements Co
 			if (!Strings.isNullOrEmpty(localeString)) {
 				locale = Locale.forLanguageTag(localeString);
 			}
-			
+
+			ImmutableSet<Locale> excludedLocales =
+					parseTomlLocaleArray(sources.getArrayOrEmpty(TOML_PROJECTS_EXCLUDED_LOCALES));
+
 			ProjectFilesDefinition projectFilesDefinition = 
 					new ProjectFilesDefinition(files, parseLocalePlaceholder(files));
 
 			// FIXME: Check if combination is valid. Otherwise throw IllegalArgumentException.
 			
-			projectSources.add(new ProjectFile(projectFilesDefinition, type, locale));
+			projectSources.add(new ProjectFile(projectFilesDefinition, type, locale, excludedLocales));
 		}
 		
 		return projectSources.build();		
+	}
+
+	/**
+	 * Parses an TOML array with locales ({@code ["en-US", "nl-NL"]}) to a Set of Java {@link Locale} instances.
+	 */
+	private ImmutableSet<Locale> parseTomlLocaleArray(TomlArray tomlArray) {
+		ImmutableSet.Builder<Locale> localesSet = ImmutableSet.builder();
+		for (int z = 0; z < tomlArray.size(); z++) {
+			String excludedLocaleString = tomlArray.getString(z);
+			localesSet.add(Locale.forLanguageTag(excludedLocaleString));
+		}
+
+		return localesSet.build();
 	}
 }

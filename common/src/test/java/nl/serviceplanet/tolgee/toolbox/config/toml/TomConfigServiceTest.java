@@ -58,8 +58,14 @@ public final class TomConfigServiceTest {
 						true,
 						"tolgee.server.backend",
 						42341,
-						ImmutableSet.of(new ProjectFile(projectSourceFiles, "property", Locale.of("nl", "NL"))),
-						ImmutableSet.of(new ProjectFile(projectTargetFiles, "property", Locale.of("nl", "NL"))))
+						ImmutableSet.of(new ProjectFile(projectSourceFiles,
+								"property",
+								Locale.of("nl", "NL"),
+								ImmutableSet.of())),
+						ImmutableSet.of(new ProjectFile(projectTargetFiles,
+								"property",
+								Locale.of("nl", "NL"),
+								ImmutableSet.of())))
 		);
 
 		assertThat(actualResult).containsExactlyElementsIn(expectedResult);

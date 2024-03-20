@@ -58,7 +58,8 @@ type = "property"
 files = "Messages.properties"
 type = "property"
 # The locale is mandatory if there is no placeholder from which a locale can be extracted 
-# (i.e. no tag such as "${locale separator=underscore, region_case=lower}")
+# (i.e. no tag such as "${locale separator=underscore, region_case=lower}"). Must be specified as a IETF BCP 47 
+# language tag string.
 locale = "nl-NL"
 
 # Specifies where the pulled (downloaded) messages from the Tolgee's server export functionality are written to.
@@ -66,6 +67,9 @@ locale = "nl-NL"
 # Pattern used to create message target files. 
 files = "foo-directory_${locale separator=dash, region_case=upper}/Messages.properties"
 type = "property"
+# Do not create translation files for these locales. Useful if for example there is a base language without a 
+# tag in the file name such as "Messages.properties". Must contain IETF BCP 47 language tag strings.
+excluded_locales = ["nl-NL"]
 
 [[projects.targets]]
 # Select a single target file (without using a placeholder).

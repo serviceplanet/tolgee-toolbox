@@ -70,6 +70,11 @@ public final class DefaultPullService extends AbstractService implements PullSer
 			if (tolgeeNamespaceOpt.isPresent()) {
 				for (TolgeeProjectLanguage tolgeeProjectLanguage : tolgeeProjectLanguages) {
 					for (ProjectFile targetProjectFile : project.projectTargets()) {
+						if (targetProjectFile.excludedLocales().contains(tolgeeProjectLanguage.locale())) {
+							// If the locale has been specified as to be excluded, skip it.
+							continue;
+						}
+
 						StringBuilder targetFile = new StringBuilder(targetProjectFile.files().projectFileDefinition());
 						for (LocalePlaceholder localePlaceholder : targetProjectFile.files().localePlaceholders()) {
 							int index = targetFile.indexOf(localePlaceholder.placeholder());
