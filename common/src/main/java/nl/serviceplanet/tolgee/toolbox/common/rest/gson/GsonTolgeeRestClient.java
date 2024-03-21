@@ -88,6 +88,8 @@ public final class GsonTolgeeRestClient implements TolgeeRestClient {
 															 long projectId,
 															 Path messageFile,
 															 String tolgeeMessageFileName) throws IOException {
+		log.debug("Uploading import entry.");
+
 		try (CloseableHttpClient httpClient = createHttpClient()) {
 			URI fullApiUri = apiUri.resolve(String.format(IMPORT, projectId));
 			HttpPost fileUploadPost = new HttpPost(fullApiUri);
@@ -129,6 +131,8 @@ public final class GsonTolgeeRestClient implements TolgeeRestClient {
 
 	@Override
 	public ImmutableSet<TolgeeProjectLanguage> importList(URI apiUri, char[] apiKey, long projectId) throws IOException {
+		log.debug("Retrieving list of import entries.");
+
 		ImmutableSet.Builder<TolgeeProjectLanguage> importEntries = ImmutableSet.builder();
 
 		try (CloseableHttpClient httpClient = createHttpClient()) {
@@ -154,6 +158,8 @@ public final class GsonTolgeeRestClient implements TolgeeRestClient {
 									  long projectId,
 									  long importFileId, 
 									  String namespace) throws IOException {
+		log.debug("Setting namespaces on import entry.");
+
 		try (CloseableHttpClient httpClient = createHttpClient()) {
 			URI fullApiUri = apiUri.resolve(String.format(IMPORT_SELECT_NAMESPACE, projectId, importFileId));
 			HttpPut importSelectNamespacePut = new HttpPut(fullApiUri);
@@ -176,6 +182,8 @@ public final class GsonTolgeeRestClient implements TolgeeRestClient {
 									 long projectId,
 									 long importLanguageId,
 									 long existingLanguageId) throws IOException {
+		log.debug("Setting language on import entry.");
+
 		try (CloseableHttpClient httpClient = createHttpClient()) {
 			URI fullApiUri = apiUri.resolve(String.format(IMPORT_SELECT_LANGUAGE, projectId, importLanguageId, existingLanguageId));
 			HttpPut httpPut = new HttpPut(fullApiUri);
@@ -189,6 +197,8 @@ public final class GsonTolgeeRestClient implements TolgeeRestClient {
 
 	@Override
 	public ImmutableSet<TolgeeProjectLanguage> projectLanguages(URI apiUri, char[] apiKey, long projectId) throws IOException {
+		log.debug("Retrieving project languages.");
+
 		ImmutableSet.Builder<TolgeeProjectLanguage> projectLocales = ImmutableSet.builder();
 
 		try (CloseableHttpClient httpClient = createHttpClient()) {
@@ -226,6 +236,8 @@ public final class GsonTolgeeRestClient implements TolgeeRestClient {
 
 	@Override
 	public ImmutableSet<TolgeeNamespace> projectNamespaces(URI apiUri, char[] apiKey, long projectId) throws IOException {
+		log.debug("Retrieving project namespaces.");
+
 		ImmutableSet.Builder<TolgeeNamespace> projectNamespaces = ImmutableSet.builder();
 
 		try (CloseableHttpClient httpClient = createHttpClient()) {
@@ -257,6 +269,7 @@ public final class GsonTolgeeRestClient implements TolgeeRestClient {
 					   String namespace,
 					   MessageFormatType messageFormatType,
 					   Path savePath) throws IOException {
+		log.debug("Retrieving project export.");
 
 		try (CloseableHttpClient httpClient = createHttpClient()) {
 			URI fullApiUri = apiUri.resolve(String.format(EXPORT, projectId));

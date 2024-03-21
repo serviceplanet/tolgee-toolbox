@@ -200,3 +200,7 @@ Starting a Tolgee development environment:
 ```shell
 $ podman run -v tolgee_data:/data/ -p 8085:8080 tolgee/tolgee
 ```
+
+# Known gotchas / issues / limitations
+
+* Tolgee by default supports up to 100 entries in its importer. If you exceed this you will get an HTTP 400 error. See Tolgee's [ImportService.kt](https://github.com/tolgee/tolgee-platform/blob/c39d3dbb5351ffc7d237f1a854d146eb6663d851/backend/data/src/main/kotlin/io/tolgee/service/dataImport/ImportService.kt#L89-L91).
