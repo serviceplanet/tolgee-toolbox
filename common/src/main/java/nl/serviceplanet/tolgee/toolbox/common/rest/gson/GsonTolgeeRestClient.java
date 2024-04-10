@@ -279,7 +279,9 @@ public final class GsonTolgeeRestClient implements TolgeeRestClient {
 			Export exportJson = new Export();
 			exportJson.setLanguages(ImmutableList.of(localeToTolgeeTag(locale)));
 			exportJson.setFormat(messageFormatType.toString());
-			exportJson.setFilterNamespace(ImmutableList.of(namespace));
+			if (!Strings.isNullOrEmpty(namespace)) {
+				exportJson.setFilterNamespace(ImmutableList.of(namespace));
+			}
 
 			HttpEntity stringEntity = new StringEntity(gson.toJson(exportJson), ContentType.APPLICATION_JSON);
 			httpPost.setEntity(stringEntity);

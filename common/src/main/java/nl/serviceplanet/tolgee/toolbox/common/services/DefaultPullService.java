@@ -63,7 +63,7 @@ public final class DefaultPullService extends AbstractService implements PullSer
 					project.tolgeeProjectId());
 
 			Optional<TolgeeNamespace> tolgeeNamespaceOpt = tolgeeNamespaces.stream()
-					.filter(tolgeeNamespace -> tolgeeNamespace.name().equals(project.namespace()))
+					.filter(tolgeeNamespace -> tolgeeNamespace.tolgeeId() != 0 && tolgeeNamespace.name().equals(project.namespace()))
 					.findFirst();
 
 			if (project.missingNamespaceFail() && tolgeeNamespaceOpt.isEmpty()) {
