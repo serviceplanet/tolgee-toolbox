@@ -43,13 +43,31 @@ public interface TolgeeRestClient {
 	 * See: https://tolgee.io/api#tag/Import/operation/addFiles_1
 	 * 
 	 * @param messageFile The path to the actual message file we want to upload.
-	 * @param tolgeeMessageFileName The file name used by Tolgee in the import screen.
+	 * @param tolgeeMessageFileName The file name used by Tolgee for error-reporting during imports.
 	 */
 	ImmutableSet<TolgeeImportLanguage> importAddFile(URI apiUri,
 													 char[] apiKey,
 													 long projectId,
 													 Path messageFile,
 													 String tolgeeMessageFileName) throws IOException;
+	/**
+	 * Uploads a file to the Tolgee import-single-step.
+	 *
+	 * Blocks the caller thread until completed.
+	 *
+	 * See: https://tolgee.io/api#tag/Import/operation/addFiles_1
+	 *
+	 * @param messageFile The path to the actual message file we want to upload.
+	 * @param tolgeeMessageFileName The file name used by Tolgee in the import screen.
+	 */
+	void singleStepImport(URI apiUri,
+						  char[] apiKey,
+						  long projectId,
+						  Path messageFile,
+						  String tolgeeMessageFileName,
+						  String namespace,
+						  Locale locale,
+						  MessageFormatType formatType) throws IOException;
 
 	/**
 	 * Lists all the entries in Tolgees importer for a project.

@@ -31,6 +31,6 @@ public record Project(
 		boolean missingNamespaceFail,
 		String namespace,
 		long tolgeeProjectId,
-		ImmutableSet<ProjectFile> projectFiles,
+		ImmutableSet<ProjectFile> projectSources,
 		ImmutableSet<ProjectFile> projectTargets
 ) {}

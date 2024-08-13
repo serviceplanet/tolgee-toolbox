@@ -44,8 +44,8 @@ public final class TomConfigServiceTest {
 	public void testProject1Config() throws Exception {
 		Path basePath = Path.of(System.getProperty("user.dir"),"src", "test", "mock-structure", "test-project-1");
 
-		TomlConfigService tomConfigService = new TomlConfigService();
-		ImmutableSet<Project> actualResult = tomConfigService.loadProjects(basePath);
+		TomlConfigService tomlConfigService = new TomlConfigService();
+		ImmutableSet<Project> actualResult = tomlConfigService.loadProjects(basePath);
 
 		ProjectFilesDefinition projectSourceFiles = 
 				new ProjectFilesDefinition("Messages.properties", ImmutableSet.of());
@@ -60,11 +60,11 @@ public final class TomConfigServiceTest {
 						"tolgee.server.backend",
 						42341,
 						ImmutableSet.of(new ProjectFile(projectSourceFiles,
-								MessageFormatType.PROPERTIES,
+								MessageFormatType.PROPERTIES_JAVA,
 								Locale.of("nl", "NL"),
 								ImmutableSet.of())),
 						ImmutableSet.of(new ProjectFile(projectTargetFiles,
-								MessageFormatType.PROPERTIES,
+								MessageFormatType.PROPERTIES_JAVA,
 								Locale.of("nl", "NL"),
 								ImmutableSet.of())))
 		);

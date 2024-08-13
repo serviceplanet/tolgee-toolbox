@@ -30,20 +30,26 @@ public final class PicoCliDaggerFactory implements CommandLine.IFactory {
 	private final PullCommand pullCommand;
 	
 	private final PushCommand pushCommand;
+
+	private final PushSingleStepCommand pushSingleStepCommand;
 	
 	@Inject
 	public PicoCliDaggerFactory(PullCommand pullCommand, 
-								PushCommand pushCommand) {
+								PushCommand pushCommand,
+								PushSingleStepCommand pushSingleStepCommand) {
 		this.pullCommand = pullCommand;
 		this.pushCommand = pushCommand;
+		this.pushSingleStepCommand = pushSingleStepCommand;
 	}
-	
+
 	@Override
 	public <K> K create(Class<K> cls) throws Exception {
 		if (cls.equals(PullCommand.class)) {
 			return (K) pullCommand;
 		} else if (cls.equals(PushCommand.class)) {
 			return (K) pushCommand;
+		} else if (cls.equals(PushSingleStepCommand.class)) {
+			return (K) pushSingleStepCommand;
 		} else {
 			throw new IllegalArgumentException();
 		}

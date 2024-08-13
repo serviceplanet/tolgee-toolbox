@@ -10,7 +10,7 @@ tolgee.namespace = "tolgee.frontend"
 
 [[projects.sources]] 
 files = "Messages_${locale separator=underscore, region_case=upper}.properties"
-type = "PROPERTIES"
+type = "PROPERTIES_JAVA"
 
 [[projects.targets]] 
 files = "Messages_${locale separator=underscore, region_case=lower}.xlf"

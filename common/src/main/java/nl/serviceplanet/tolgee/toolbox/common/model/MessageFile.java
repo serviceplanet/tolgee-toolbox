@@ -18,5 +18,5 @@ package nl.serviceplanet.tolgee.toolbox.common.model;
 import java.nio.file.Path;
 import java.util.Locale;
 
-public record MessageFile (Path path, Locale locale) {
+public record MessageFile (Path path, Locale locale, MessageFormatType messageFormatType) {
 }

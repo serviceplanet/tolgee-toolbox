@@ -35,13 +35,13 @@ import java.util.UUID;
 
 @Singleton
 public final class DefaultPushService extends AbstractService implements PushService {
-	
+
 	private static final Logger log = LoggerFactory.getLogger(DefaultPushService.class);
-	
+
 	private final ConfigService configService;
-	
+
 	private final TolgeeRestClient tolgeeRestClient;
-	
+
 	@Inject
 	public DefaultPushService(ConfigService configService, TolgeeRestClient tolgeeRestClient) {
 		this.configService = configService;
@@ -49,42 +49,71 @@ public final class DefaultPushService extends AbstractService implements PushSer
 	}
 
 	@Override
-	public void pushMessages(Path basePath) throws IOException {		
-		ImmutableSet<Project> projects = configService.loadProjects(basePath);
-		
-		for (Project project : projects) {			
-			ImmutableSet<MessageFile> messageFiles = findMessageFiles(project.projectPath(), project.projectFiles());
-			ImmutableSet<TolgeeProjectLanguage> tolgeeProjectLanguages = tolgeeRestClient.projectLanguages(
+	public void pushMessages(Project project) throws IOException {
+		ImmutableSet<TolgeeProjectLanguage> tolgeeProjectLanguages = tolgeeRestClient.projectLanguages(
+				project.tolgeeApiURI(),
+				configService.getTolgeeApiKey(),
+				project.tolgeeProjectId());
+
+		if (project.missingNamespaceFail() && Strings.isNullOrEmpty(project.namespace())) {
+			throw new IllegalStateException(
+					String.format("Project with ID %s is missing namespace definition '%s' while namespace is configured as mandatory.",
+							project.tolgeeProjectId(), project.namespace()));
+		}
+
+		ImmutableSet<MessageFile> messageFiles = findSourceMessageFiles(project.projectPath(), project.projectSources());
+		if (messageFiles.isEmpty()) {
+			throw new IllegalStateException("Source MessageFiles not found in: " + project.projectPath());
+		}
+
+		for (MessageFile messageFile : messageFiles) {
+			// We prefix the filename with a UUID, so we can later find the "importFileID" of the file we just
+			// uploaded.
+			String generatedFileName = UUID.randomUUID() + "_" + messageFile.path().getFileName();
+
+			ImmutableSet<TolgeeImportLanguage> importLanguages = tolgeeRestClient.importAddFile(
 					project.tolgeeApiURI(),
 					configService.getTolgeeApiKey(),
-					project.tolgeeProjectId());
+					project.tolgeeProjectId(),
+					messageFile.path(),
+					generatedFileName);
 
-			for (MessageFile messageFile : messageFiles) {
-				if (project.missingNamespaceFail() && Strings.isNullOrEmpty(project.namespace())) {
-					throw new IllegalStateException(
-							String.format("Project with ID %s is missing a name space definition while namespace is configured as mandatory.",
-									project.tolgeeProjectId()));
-				}
-
-				// FIXME: Validate if we found a valid set of files.
-
-				// We prefix the filename with a UUID, so we can later find the "importFileID" of the file we just
-				// uploaded.
-				String generatedFileName = UUID.randomUUID() + "_" + messageFile.path().getFileName();
-				
-				ImmutableSet<TolgeeImportLanguage> importLanguages = tolgeeRestClient.importAddFile(
-						project.tolgeeApiURI(),
-						configService.getTolgeeApiKey(),
-						project.tolgeeProjectId(),
-						messageFile.path(),
-						generatedFileName);
-
-				if (!Strings.isNullOrEmpty(project.namespace())) {
-					configureNamespace(project, messageFile.path(), importLanguages, generatedFileName);
-				}
-
-				configureLanguage(project, messageFile, importLanguages, generatedFileName, tolgeeProjectLanguages);
+			if (!Strings.isNullOrEmpty(project.namespace())) {
+				configureNamespace(project, messageFile.path(), importLanguages, generatedFileName);
 			}
+
+			configureLanguage(project, messageFile, importLanguages, generatedFileName, tolgeeProjectLanguages);
+		}
+	}
+
+	@Override
+	public void pushMessagesInSingleStep(Project project) throws IOException {
+		ImmutableSet<MessageFile> messageFiles = findSourceMessageFiles(project.projectPath(), project.projectSources());
+		if (messageFiles.isEmpty()) {
+			throw new IllegalStateException("Source MessageFiles not found in: " + project.projectPath());
+		}
+
+		for (MessageFile messageFile : messageFiles) {
+			if (project.missingNamespaceFail() && Strings.isNullOrEmpty(project.namespace())) {
+				throw new IllegalStateException(
+						String.format("Project with ID %s is missing namespace definition '%s' while namespace is configured as mandatory.",
+								project.tolgeeProjectId(), project.namespace()));
+			}
+
+			// We prefix the filename with a UUID, so we can later find the "importFileID" of the file we just
+			// uploaded. In the case of [single-step-import] - opposed to [import] - this doesn't seem to lead
+			// to traceability in the UI but would be traceable in the tolgee-service database / log-files.
+			String generatedFileName = UUID.randomUUID() + "_" + messageFile.path().getFileName();
+
+			tolgeeRestClient.singleStepImport(
+					project.tolgeeApiURI(),
+					configService.getTolgeeApiKey(),
+					project.tolgeeProjectId(),
+					messageFile.path(),
+					generatedFileName,
+					project.namespace(),
+					messageFile.locale(),
+					messageFile.messageFormatType());
 		}
 	}
 
@@ -117,9 +146,9 @@ public final class DefaultPushService extends AbstractService implements PushSer
 		}
 	}
 
-	private void configureNamespace(Project project, 
-									Path messageFile, 
-									ImmutableSet<TolgeeImportLanguage> importLanguages, 
+	private void configureNamespace(Project project,
+									Path messageFile,
+									ImmutableSet<TolgeeImportLanguage> importLanguages,
 									String generatedFileName) throws IOException {
 		boolean namespaceConfigured = false;
 

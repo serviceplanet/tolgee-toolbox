@@ -10,10 +10,10 @@ tolgee.namespace = "tolgee.server.backend"
 
 [[projects.sources]]
 files = "Messages.properties"
-type = "PROPERTIES"
+type = "PROPERTIES_JAVA"
 locale = "nl-NL"
 
 [[projects.targets]]
 files = "Messages.properties"
-type = "PROPERTIES"
+type = "PROPERTIES_JAVA"
 locale = "nl-NL"

@@ -18,7 +18,6 @@ package nl.serviceplanet.tolgee.toolbox.cli.picocli;
 import jakarta.inject.Inject;
 import nl.serviceplanet.tolgee.toolbox.common.config.api.ConfigService;
 import nl.serviceplanet.tolgee.toolbox.common.config.api.Project;
-import nl.serviceplanet.tolgee.toolbox.common.services.DefaultPushService;
 import nl.serviceplanet.tolgee.toolbox.common.services.api.PushService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,12 +27,12 @@ import java.io.IOException;
 import java.nio.file.Path;
 
 @CommandLine.Command(
-		name = "push",
-		description = "Push (upload) translations to Tolgee. In the Tolgee web application this is called 'Import'."
+		name = "push-single-step",
+		description = "Push (upload) translations to Tolgee. In the Tolgee web application this is called 'Import-Single-Step'."
 )
-public final class PushCommand implements Runnable {
+public final class PushSingleStepCommand implements Runnable {
 
-	private static final Logger log = LoggerFactory.getLogger(PushCommand.class);
+	private static final Logger log = LoggerFactory.getLogger(PushSingleStepCommand.class);
 
 	private final ConfigService configService;
 	private final PushService pushService;
@@ -42,9 +41,9 @@ public final class PushCommand implements Runnable {
 			names = "--base-path",
 			description = "Optional path to the project. If omitted the current working directory is used.")
 	private Path basePathArg;
-	
+
 	@Inject
-	public PushCommand(PushService pushService, ConfigService configService) {
+	public PushSingleStepCommand(PushService pushService, ConfigService configService) {
 		this.pushService = pushService;
 		this.configService = configService;
 	}
@@ -57,9 +56,8 @@ public final class PushCommand implements Runnable {
 		}
 
 		try {
-			// FIXME: Properly give feedback to user.
 			for (Project project : configService.loadProjects(basePath)) {
-				pushService.pushMessages(project);
+				pushService.pushMessagesInSingleStep(project);
 			}
 		} catch (IOException e) {
 			throw new RuntimeException(e);

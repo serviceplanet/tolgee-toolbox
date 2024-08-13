@@ -39,8 +39,10 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
+import java.util.Set;
 
 /**
  * @author Jasper Siepkes <siepkes@serviceplanet.nl>
@@ -78,7 +80,7 @@ public final class TomlConfigService extends AbstractConfigService implements Co
 					configFileHierarchy.add(parentTolgeeToolboxPath);
 				}
 
-				if (parentPath.getParent().startsWith(basePath)) {
+				if (parentPath.getParent() != null && parentPath.getParent().startsWith(basePath)) {
 					parentPath = parentPath.getParent();
 				} else {
 					parentPath = null;
@@ -149,11 +151,12 @@ public final class TomlConfigService extends AbstractConfigService implements Co
 			throw new IllegalStateException(String.format("'%s' setting not found.", TOML_TOLGEE_API_URL));
 		}
 
-		// Fetch the projects from the top level .tolgee-toolbox file.
-		Path topConfig = configFileHierarchy.getFirst();
-		TomlParseResult result = Toml.parse(topConfig);
+		// Fetch the projects from the deepest .tolgee-toolbox file.
+		Path deepestConfig = configFileHierarchy.getFirst();
+		TomlParseResult result = Toml.parse(deepestConfig);
 		result.errors().forEach(error -> log.warn("TOML parsing error: {}", error.toString()));
-		
+
+		Set<Long> projectIds = new HashSet<>();
 		TomlArray projectsArray = result.getArrayOrEmpty("projects");
 		for (int x = 0; x < projectsArray.size(); x++) {
 			TomlTable projectTable = projectsArray.getTable(x);
@@ -161,13 +164,17 @@ public final class TomlConfigService extends AbstractConfigService implements Co
 			Long projectId = projectTable.getLong(TOML_PROJECTS_TOLGEE_ID);
 			if (projectId == null) {
 				throw new IllegalArgumentException(String.format("Config file '%s' is missing '%s'.", 
-						topConfig, TOML_PROJECTS_TOLGEE_ID));
+						deepestConfig, TOML_PROJECTS_TOLGEE_ID));
+			}
+			if (!projectIds.add(projectId)) {
+				throw new IllegalArgumentException(String.format("Config file '%s' contains duplicate '%s': %s.",
+						deepestConfig, TOML_PROJECTS_TOLGEE_ID, projectId));
 			}
 			
 			String namespace = projectTable.getString(TOML_PROJECTS_NAMESPACE);
 
 			projects.add(new Project(
-					topConfig.getParent(),
+					deepestConfig.getParent(),
 					tolgeeApiUrl,
 					missingNamespaceFail,
 					namespace,

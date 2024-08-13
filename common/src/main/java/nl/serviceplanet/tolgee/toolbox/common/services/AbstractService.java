@@ -36,17 +36,17 @@ import java.util.stream.Stream;
 public abstract class AbstractService {
 
 	private final Logger log = LoggerFactory.getLogger(AbstractService.class);
-	
+
 	public AbstractService() {
 	}
 
-	protected ImmutableSet<MessageFile> findMessageFiles(Path projectPath, Collection<ProjectFile> sourceFiles) throws IOException {
+	protected ImmutableSet<MessageFile> findSourceMessageFiles(Path projectPath, Collection<ProjectFile> sourceFiles) throws IOException {
 		ImmutableSet.Builder<MessageFile> messageFilesBuilder = ImmutableSet.builder();
 
 		for (ProjectFile sourceFile : sourceFiles) {
 			Pattern filePattern = projectFileToPattern(sourceFile.files());
-			
-			try (Stream<Path> fileStream = Files.walk(projectPath, 200)){
+
+			try (Stream<Path> fileStream = Files.walk(projectPath, 200)) {
 				messageFilesBuilder.addAll(fileStream
 						.filter(path -> filePattern.matcher(path.getFileName().toString()).matches())
 						.map(path -> toMessageFile(path, sourceFile))
@@ -65,9 +65,9 @@ public abstract class AbstractService {
 
 		return messageFiles;
 	}
-	
+
 	/**
-	 * Generates a regex (i.e. a {@link Pattern}) to match message files for the specified 
+	 * Generates a regex (i.e. a {@link Pattern}) to match message files for the specified
 	 * {@link ProjectFilesDefinition}.
 	 */
 	private Pattern projectFileToPattern(ProjectFilesDefinition projectFilesDefinition) {
@@ -102,13 +102,13 @@ public abstract class AbstractService {
 	private static final String REGEX_COUNTRY_UPPER = "([A-Z]{2})";
 
 	/**
-	 * Primarily extracts the Locale from {@link Path} based on the placeholders defined in the 
+	 * Primarily extracts the Locale from {@link Path} based on the placeholders defined in the
 	 * specified {@link ProjectFile}.
 	 */
 	private MessageFile toMessageFile(Path path, ProjectFile sourceFile) {
 		if (sourceFile.files().localePlaceholders().isEmpty()) {
 			// If there are no placeholders, use the locale which was specified in the configuration.
-			return new MessageFile(path, sourceFile.locale());
+			return new MessageFile(path, sourceFile.locale(), sourceFile.messageFormatType());
 		}
 
 		// Try to match a full locale definition such as 'en_US' in the filename.
@@ -118,7 +118,7 @@ public abstract class AbstractService {
 		//  this doesn't work.
 		int placeholderIndex = sourceFile.files().projectFileDefinition().indexOf(localePlaceholder.placeholder());
 		String regexStart = "\\Q" + sourceFile.files().projectFileDefinition().substring(0, placeholderIndex) + "\\E";
-		
+
 		// Example regex: Messages_([a-z]{2})(?:_([A-Z]{2}))?\.properties
 		StringBuilder regexBuilder = new StringBuilder(regexStart);
 		regexBuilder.append(REGEX_COUNTRY_LOWER);
@@ -138,21 +138,21 @@ public abstract class AbstractService {
 					localePlaceholder.separator()));
 		}
 		regexBuilder.append(")?");
-		
+
 		Matcher matcher = Pattern.compile(regexBuilder.toString()).matcher(path.toString());
 		if (matcher.find()) {
 			Locale locale = Locale.of(matcher.group(1));
-			
+
 			if (matcher.group(2) != null) {
 				locale = Locale.of(matcher.group(1), matcher.group(2));
 			}
-			
-			return new MessageFile(path, locale);
+
+			return new MessageFile(path, locale, sourceFile.messageFormatType());
 		} else {
 			throw new IllegalStateException();
 		}
 	}
-	
+
 	private String localePlaceholderToRegex(LocalePlaceholder localePlaceholder) {
 		StringBuilder regexBuilder = new StringBuilder();
 

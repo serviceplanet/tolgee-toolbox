@@ -66,9 +66,9 @@ public final class Main {
 	private static final class UncaughtExceptionLogger implements Thread.UncaughtExceptionHandler {
 		@Override
 		public void uncaughtException(Thread thread, Throwable e) {
-			log.error("Thread '{}' with id {} exited because of an uncaught exception. Threads must not die because " +
+			log.error("Thread '{}' with id {} died because of an uncaught exception. Threads must not die because " +
 							"of uncaught exceptions. This is a bug and must be fixed.",
-					thread.getName(), thread.getId(), e);
+					thread.getName(), thread.threadId(), e);
 		}
 	}
 }

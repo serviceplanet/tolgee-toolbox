@@ -38,6 +38,7 @@ import nl.serviceplanet.tolgee.toolbox.common.rest.api.json.ProjectLanguage;
 import nl.serviceplanet.tolgee.toolbox.common.rest.api.json.ProjectLanguagesResp;
 import nl.serviceplanet.tolgee.toolbox.common.rest.api.json.ProjectNamespace;
 import nl.serviceplanet.tolgee.toolbox.common.rest.api.json.ProjectNamespacesResp;
+import nl.serviceplanet.tolgee.toolbox.common.rest.api.json.SingleStepImportReq;
 import org.apache.hc.client5.http.classic.methods.HttpGet;
 import org.apache.hc.client5.http.classic.methods.HttpPost;
 import org.apache.hc.client5.http.classic.methods.HttpPut;
@@ -60,6 +61,7 @@ import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.List;
 import java.util.Locale;
 
 /**
@@ -81,13 +83,14 @@ public final class GsonTolgeeRestClient implements TolgeeRestClient {
 	private static final String HEADER_API_KEY = "X-API-Key";
 
 	private static final String IMPORT = "/v2/projects/%s/import";
+	private static final String SINGLE_STEP_IMPORT = "/v2/projects/%s/single-step-import";
 
 	@Override
 	public ImmutableSet<TolgeeImportLanguage> importAddFile(URI apiUri,
-															 char[] apiKey,
-															 long projectId,
-															 Path messageFile,
-															 String tolgeeMessageFileName) throws IOException {
+															char[] apiKey,
+															long projectId,
+															Path messageFile,
+															String tolgeeMessageFileName) throws IOException {
 		log.debug("Uploading import entry.");
 
 		try (CloseableHttpClient httpClient = createHttpClient()) {
@@ -107,22 +110,95 @@ public final class GsonTolgeeRestClient implements TolgeeRestClient {
 
 			fileUploadPost.setEntity(multipart);
 
-			ImportAddFilesResp resp = executeRequestResponse(ImportAddFilesResp.class, httpClient, 
+			ImportAddFilesResp resp = executeRequestResponse(ImportAddFilesResp.class, httpClient,
 					fileUploadPost, "project: " + projectId);
-			
+
 			ImmutableSet.Builder<TolgeeImportLanguage> importEntries = ImmutableSet.builder();
-			if (resp.getResult() != null && 
-					resp.getResult().getEmbedded() != null && 
+			if (resp.getResult() != null &&
+					resp.getResult().getEmbedded() != null &&
 					resp.getResult().getEmbedded().getLanguages() != null) {
 				for (ImportLanguage importLanguage : resp.getResult().getEmbedded().getLanguages()) {
 					importEntries.add(toTolgeeImportLanguage(importLanguage));
 				}
 			}
-			
+
 			return importEntries.build();
 		}
 	}
-	
+
+	@Override
+	public void singleStepImport(URI apiUri,
+								 char[] apiKey,
+								 long projectId,
+								 Path messageFile,
+								 String tolgeeMessageFileName,
+								 String namespace,
+								 Locale locale,
+								 MessageFormatType formatType) throws IOException {
+		log.debug("Uploading single-step-import entry.");
+
+		try (CloseableHttpClient httpClient = createHttpClient()) {
+			URI fullApiUri = apiUri.resolve(String.format(SINGLE_STEP_IMPORT, projectId));
+			log.debug("Uploading single-step-import entry to URL: {}", fullApiUri);
+			HttpPost fileUploadPost = new HttpPost(fullApiUri);
+			fileUploadPost.setHeader(HEADER_API_KEY, String.valueOf(apiKey));
+
+			SingleStepImportReq.FileMapping fileMapping = new SingleStepImportReq.FileMapping();
+			fileMapping.setFileName(tolgeeMessageFileName);
+			fileMapping.setNamespace(namespace);
+			fileMapping.setLanguageTag(locale.toLanguageTag());
+			fileMapping.setFormat(SingleStepImportReq.FileMapping.Format.fromMessageFormatType(formatType));
+
+			SingleStepImportReq.Params reqParams = new SingleStepImportReq.Params();
+			reqParams.setForceMode(SingleStepImportReq.Params.ForceMode.OVERRIDE);
+			reqParams.setOverrideKeyDescriptions(false);
+			reqParams.setConvertPlaceholdersToIcu(formatType == MessageFormatType.PROPERTIES_ICU);
+			reqParams.setFileMappings(List.of(fileMapping));
+			reqParams.setTagNewKeys(List.of());
+			reqParams.setRemoveOtherKeys(false);
+
+			String paramsJons = gson.toJson(reqParams);
+			log.info("import-single-step request: {}", paramsJons);
+
+			Path tmpTolgeeMessageFile = IcuQuickAndDirtyHack.createTempFileForFix();
+			IcuQuickAndDirtyHack.convertSoyIcuToTolgeeIcu(messageFile, tmpTolgeeMessageFile);
+
+			HttpEntity multipart = MultipartEntityBuilder.create()
+					.addBinaryBody(
+							"files",
+							tmpTolgeeMessageFile.toFile(),
+							ContentType.TEXT_PLAIN,
+							tolgeeMessageFileName
+					)
+					.addTextBody("params", paramsJons, ContentType.APPLICATION_JSON)
+					.build();
+
+			fileUploadPost.setEntity(multipart);
+
+			String resp = executeRequestResponse(String.class, httpClient,
+					fileUploadPost, "project: " + projectId);
+
+			Files.deleteIfExists(tmpTolgeeMessageFile);
+			log.info("import-single-step response: {}", resp);
+		}
+	}
+
+	private static class IcuQuickAndDirtyHack {
+		// See: https://github.com/tolgee/tolgee-platform/pull/2445
+
+		private static Path createTempFileForFix() throws IOException {
+			return Files.createTempFile("icu-plural-case-one", null);
+		}
+
+		private static void convertSoyIcuToTolgeeIcu(Path source, Path tmp) throws IOException {
+			Files.writeString(tmp, Files.readString(source));//.replace(",=1{", ",one{"));
+		}
+
+		private static void convertTolgeeIcuToSoyIcu(Path tmp, Path target) throws IOException {
+			Files.writeString(target, Files.readString(tmp));//.replace(",one{", ",=1{"));
+		}
+	}
+
 	private TolgeeImportLanguage toTolgeeImportLanguage(ImportLanguage importLanguage) {
 		return new TolgeeImportLanguage(importLanguage.getId(),
 				importLanguage.getImportFileName(),
@@ -140,7 +216,7 @@ public final class GsonTolgeeRestClient implements TolgeeRestClient {
 			HttpGet importGet = new HttpGet(fullApiUri);
 			importGet.setHeader(HEADER_API_KEY, String.valueOf(apiKey));
 
-			ImportListResp resp = executeRequestResponse(ImportListResp.class, httpClient, 
+			ImportListResp resp = executeRequestResponse(ImportListResp.class, httpClient,
 					importGet, "project: " + projectId);
 			for (ProjectLanguage projectLanguage : resp.getEmbedded().getLanguages()) {
 				importEntries.add(toTolgeeProjectLanguage(projectLanguage));
@@ -151,12 +227,12 @@ public final class GsonTolgeeRestClient implements TolgeeRestClient {
 	}
 
 	private static final String IMPORT_SELECT_NAMESPACE = "/v2/projects/%s/import/result/files/%s/select-namespace";
-	
+
 	@Override
-	public void importSelectNamespace(URI apiUri, 
+	public void importSelectNamespace(URI apiUri,
 									  char[] apiKey,
 									  long projectId,
-									  long importFileId, 
+									  long importFileId,
 									  String namespace) throws IOException {
 		log.debug("Setting namespaces on import entry.");
 
@@ -206,7 +282,7 @@ public final class GsonTolgeeRestClient implements TolgeeRestClient {
 			HttpGet projectLocalesGet = new HttpGet(fullApiUri);
 			projectLocalesGet.setHeader(HEADER_API_KEY, String.valueOf(apiKey));
 
-			ProjectLanguagesResp resp = executeRequestResponse(ProjectLanguagesResp.class, httpClient, 
+			ProjectLanguagesResp resp = executeRequestResponse(ProjectLanguagesResp.class, httpClient,
 					projectLocalesGet, "project: " + projectId);
 			for (ProjectLanguage projectLanguage : resp.getEmbedded().getLanguages()) {
 				projectLocales.add(toTolgeeProjectLanguage(projectLanguage));
@@ -245,7 +321,7 @@ public final class GsonTolgeeRestClient implements TolgeeRestClient {
 			HttpGet projectLocalesNamespaces = new HttpGet(fullApiUri);
 			projectLocalesNamespaces.setHeader(HEADER_API_KEY, String.valueOf(apiKey));
 
-			ProjectNamespacesResp resp = executeRequestResponse(ProjectNamespacesResp.class, httpClient, 
+			ProjectNamespacesResp resp = executeRequestResponse(ProjectNamespacesResp.class, httpClient,
 					projectLocalesNamespaces, "project: " + projectId);
 			for (ProjectNamespace projectNamespace : resp.getEmbedded().getNamespaces()) {
 				projectNamespaces.add(toTolgeeNamespace(projectNamespace));
@@ -269,7 +345,7 @@ public final class GsonTolgeeRestClient implements TolgeeRestClient {
 					   String namespace,
 					   MessageFormatType messageFormatType,
 					   Path savePath) throws IOException {
-		log.debug("Retrieving project export.");
+		log.debug("Retrieving export project for id {}.", projectId);
 
 		try (CloseableHttpClient httpClient = createHttpClient()) {
 			URI fullApiUri = apiUri.resolve(String.format(EXPORT, projectId));
@@ -288,14 +364,19 @@ public final class GsonTolgeeRestClient implements TolgeeRestClient {
 
 			httpClient.execute(httpPost, response -> {
 				HttpEntity entity = getEntity(response, "project: " + projectId);
-					try (InputStream contentInputStream = entity.getContent();
-						 OutputStream fileOutputStream = Files.newOutputStream(savePath)) {
-						byte[] buffer = new byte[1024];
-						int length;
-						while ((length = contentInputStream.read(buffer)) != -1) {
-							fileOutputStream.write(buffer, 0, length);
-						}
+
+				Path tmpTolgeeMessageFile = IcuQuickAndDirtyHack.createTempFileForFix();
+
+				try (InputStream contentInputStream = entity.getContent();
+					 OutputStream fileOutputStream = Files.newOutputStream(tmpTolgeeMessageFile)) {
+					byte[] buffer = new byte[1024];
+					for (int length; (length = contentInputStream.read(buffer)) != -1; ) {
+						fileOutputStream.write(buffer, 0, length);
 					}
+				}
+
+				IcuQuickAndDirtyHack.convertTolgeeIcuToSoyIcu(tmpTolgeeMessageFile, savePath);
+				Files.deleteIfExists(tmpTolgeeMessageFile);
 
 				return null;
 			});
@@ -319,19 +400,19 @@ public final class GsonTolgeeRestClient implements TolgeeRestClient {
 		return HttpClients.createDefault();
 	}
 
-	private void executeRequest(CloseableHttpClient httpClient,
-								ClassicHttpRequest httpRequest,
-								String reference) throws TolgeeServerCommunicationException, IOException {
-		httpClient.execute(httpRequest, response -> {
+	private String executeRequest(CloseableHttpClient httpClient,
+								  ClassicHttpRequest httpRequest,
+								  String reference) throws TolgeeServerCommunicationException, IOException {
+		return httpClient.execute(httpRequest, response -> {
 			HttpEntity entity = getEntity(response, reference);
 
 			String responseString = EntityUtils.toString(entity);
 			log.trace("Received response from Tolgee server: {}", responseString);
 
-			return null;
+			return responseString;
 		});
 	}
-	
+
 	private <T> T executeRequestResponse(Class<T> responseType,
 										 CloseableHttpClient httpClient,
 										 ClassicHttpRequest httpRequest,
@@ -341,6 +422,14 @@ public final class GsonTolgeeRestClient implements TolgeeRestClient {
 
 			String responseString = EntityUtils.toString(entity);
 			log.trace("Received response from Tolgee server: {}", responseString);
+
+			if (responseType == null || responseType == Void.class) {
+				return null;
+			}
+
+			if (responseType == String.class) {
+				return (T) responseString;
+			}
 
 			try {
 				return gson.fromJson(responseString, responseType);
@@ -364,15 +453,16 @@ public final class GsonTolgeeRestClient implements TolgeeRestClient {
 			return entity;
 		} else {
 			if (entity != null) {
+				String responseBody;
 				try {
-					String responseBody = EntityUtils.toString(entity, StandardCharsets.UTF_8);
-
-					throw new TolgeeServerCommunicationException(String.format(
-							"Tolgee import API responded request unsuccessful (HTTP code %s) (%s). Error details: %s",
-							response.getCode(), reference, responseBody));
+					responseBody = EntityUtils.toString(entity, StandardCharsets.UTF_8);
 				} catch (Exception e) {
-					// Ignore.
+					responseBody = null;
 				}
+
+				throw new TolgeeServerCommunicationException(String.format(
+						"Tolgee import API responded request unsuccessful (HTTP code %s) (%s). Error details: %s",
+						response.getCode(), reference, responseBody));
 			}
 
 			throw new TolgeeServerCommunicationException(String.format(

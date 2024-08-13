@@ -15,6 +15,8 @@
  */
 package nl.serviceplanet.tolgee.toolbox.common.services.api;
 
+import nl.serviceplanet.tolgee.toolbox.common.config.api.Project;
+
 import java.io.IOException;
 import java.nio.file.Path;
 
@@ -24,6 +26,6 @@ public interface PullService {
 	 * Pulls all message files of a specified project location from Tolgee. Meaning they are retrieved via the
 	 * "Export" functionality in Tolgee and then written to local files.
 	 */
-	void pullMessages(Path basePath) throws IOException;
+	void pullMessages(Project project) throws IOException;
 
 }

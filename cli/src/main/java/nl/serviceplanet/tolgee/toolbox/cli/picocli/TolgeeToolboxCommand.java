@@ -19,7 +19,7 @@ import picocli.CommandLine;
 
 @CommandLine.Command(
 		name = "toolgee-toolbox",
-		subcommands = { PullCommand.class, PushCommand.class },
+		subcommands = { PullCommand.class, PushCommand.class, PushSingleStepCommand.class },
 		description = "Tolgee Toolbox is an application to interact with a Tolgee installation."
 )
 public final class TolgeeToolboxCommand {

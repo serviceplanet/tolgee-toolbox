@@ -6,7 +6,7 @@
 
 Let's start with the obvious question; How does this application differ from the (excellent!) [tolgee-cli](https://github.com/tolgee/tolgee-cli) tool? The `tolgee-cli` tool works great for front-end development but didn't really fit our Maven multi-module projects well (at the time of writing). 
 
-Conceptually this tool also works a bit different. This tool uploads the entire message file to the "Import" functionality in Tolgee. Where as the `tolgee-cli` tool works directly on the translation entries in Tolgee.
+Conceptually this tool also works a bit different. This tool uploads the entire message file to the "Import" functionality in Tolgee. Whereas the `tolgee-cli` tool works directly on the translation entries in Tolgee.
 
 The minimum supported Java version by this tool is 21.
 
@@ -14,7 +14,7 @@ The minimum supported Java version by this tool is 21.
 
 The tolgee-toolbox application primarily works with configuration files called `tolgee-toolbox.toml` which are written in [TOML](https://toml.io/).
 
-Each project is expected to have at least a single `tolgee-toolbox.toml` configuration file to tell these utilities how to interact with Tolgee (see an example below). `tolgee-toolbox.toml` files which contain a `[[projects]]` table should be placed in the directory along side the message files.
+Each project is expected to have at least a single `tolgee-toolbox.toml` configuration file to tell these utilities how to interact with Tolgee (see an example below). `tolgee-toolbox.toml` files which contain a `[[projects]]` table should be placed in the directory alongside the message files.
 
 Example `tolgee-toolbox.toml`:
 

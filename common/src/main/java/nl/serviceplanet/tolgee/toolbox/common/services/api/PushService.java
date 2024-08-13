@@ -15,8 +15,9 @@
  */
 package nl.serviceplanet.tolgee.toolbox.common.services.api;
 
+import nl.serviceplanet.tolgee.toolbox.common.config.api.Project;
+
 import java.io.IOException;
-import java.nio.file.Path;
 
 public interface PushService {
 
@@ -24,6 +25,12 @@ public interface PushService {
 	 * Pushes all message files of a specified project location to Tolgee. Meaning they are processed by the 
 	 * "Import" functionality in Tolgee.
 	 */
-	void pushMessages(Path basePath) throws IOException;
+	void pushMessages(Project project) throws IOException;
+
+	/**
+	 * Pushes all message files of a specified project location to Tolgee. Meaning they are processed by the
+	 * "Single-Step-Import" functionality in Tolgee, which is not available in the UI.
+	 */
+	void pushMessagesInSingleStep(Project project) throws IOException;
 	
 }
