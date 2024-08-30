@@ -191,11 +191,11 @@ public final class GsonTolgeeRestClient implements TolgeeRestClient {
 		}
 
 		private static void convertSoyIcuToTolgeeIcu(Path source, Path tmp) throws IOException {
-			Files.writeString(tmp, Files.readString(source));//.replace(",=1{", ",one{"));
+			Files.writeString(tmp, Files.readString(source).replace(",=1{", ",one{"));
 		}
 
 		private static void convertTolgeeIcuToSoyIcu(Path tmp, Path target) throws IOException {
-			Files.writeString(target, Files.readString(tmp));//.replace(",one{", ",=1{"));
+			Files.writeString(target, Files.readString(tmp).replace(",one{", ",=1{"));
 		}
 	}
 
