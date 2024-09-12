@@ -160,13 +160,10 @@ public final class GsonTolgeeRestClient implements TolgeeRestClient {
 			String paramsJons = gson.toJson(reqParams);
 			log.info("import-single-step request: {}", paramsJons);
 
-			Path tmpTolgeeMessageFile = IcuQuickAndDirtyHack.createTempFileForFix();
-			IcuQuickAndDirtyHack.convertSoyIcuToTolgeeIcu(messageFile, tmpTolgeeMessageFile);
-
 			HttpEntity multipart = MultipartEntityBuilder.create()
 					.addBinaryBody(
 							"files",
-							tmpTolgeeMessageFile.toFile(),
+							messageFile.toFile(),
 							ContentType.TEXT_PLAIN,
 							tolgeeMessageFileName
 					)
@@ -178,24 +175,7 @@ public final class GsonTolgeeRestClient implements TolgeeRestClient {
 			String resp = executeRequestResponse(String.class, httpClient,
 					fileUploadPost, "project: " + projectId);
 
-			Files.deleteIfExists(tmpTolgeeMessageFile);
 			log.info("import-single-step response: {}", resp);
-		}
-	}
-
-	private static class IcuQuickAndDirtyHack {
-		// See: https://github.com/tolgee/tolgee-platform/pull/2445
-
-		private static Path createTempFileForFix() throws IOException {
-			return Files.createTempFile("icu-plural-case-one", null);
-		}
-
-		private static void convertSoyIcuToTolgeeIcu(Path source, Path tmp) throws IOException {
-			Files.writeString(tmp, Files.readString(source).replace(",=1{", ",one{"));
-		}
-
-		private static void convertTolgeeIcuToSoyIcu(Path tmp, Path target) throws IOException {
-			Files.writeString(target, Files.readString(tmp).replace(",one{", ",=1{"));
 		}
 	}
 
@@ -365,18 +345,13 @@ public final class GsonTolgeeRestClient implements TolgeeRestClient {
 			httpClient.execute(httpPost, response -> {
 				HttpEntity entity = getEntity(response, "project: " + projectId);
 
-				Path tmpTolgeeMessageFile = IcuQuickAndDirtyHack.createTempFileForFix();
-
 				try (InputStream contentInputStream = entity.getContent();
-					 OutputStream fileOutputStream = Files.newOutputStream(tmpTolgeeMessageFile)) {
+					 OutputStream fileOutputStream = Files.newOutputStream(savePath)) {
 					byte[] buffer = new byte[1024];
 					for (int length; (length = contentInputStream.read(buffer)) != -1; ) {
 						fileOutputStream.write(buffer, 0, length);
 					}
 				}
-
-				IcuQuickAndDirtyHack.convertTolgeeIcuToSoyIcu(tmpTolgeeMessageFile, savePath);
-				Files.deleteIfExists(tmpTolgeeMessageFile);
 
 				return null;
 			});
