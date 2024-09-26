@@ -15,8 +15,19 @@
  */
 package nl.serviceplanet.tolgee.toolbox.common.model;
 
-import java.nio.file.Path;
-import java.util.Locale;
-
-public record MessageFile (Path path, Locale locale, ImportMessageFormatType messageFormatType) {
+/**
+ * Message format messageFormatType, for the Export endpoint, as defined by Tolgee.
+ */
+public enum ExportMessageFormatType {
+	JSON,
+	JSON_TOLGEE,
+	XLIFF,
+	PO,
+	APPLE_STRINGS_STRINGSDICT,
+	APPLE_XLIFF,
+	ANDROID_XML,
+	FLUTTER_ARB,
+	PROPERTIES,
+	YAML_RUBY,
+	YAML
 }

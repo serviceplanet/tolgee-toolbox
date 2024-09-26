@@ -108,7 +108,7 @@ public abstract class AbstractService {
 	private MessageFile toMessageFile(Path path, ProjectFile sourceFile) {
 		if (sourceFile.files().localePlaceholders().isEmpty()) {
 			// If there are no placeholders, use the locale which was specified in the configuration.
-			return new MessageFile(path, sourceFile.locale(), sourceFile.messageFormatType());
+			return new MessageFile(path, sourceFile.locale(), sourceFile.sourceMessageFormatType());
 		}
 
 		// Try to match a full locale definition such as 'en_US' in the filename.
@@ -147,7 +147,7 @@ public abstract class AbstractService {
 				locale = Locale.of(matcher.group(1), matcher.group(2));
 			}
 
-			return new MessageFile(path, locale, sourceFile.messageFormatType());
+			return new MessageFile(path, locale, sourceFile.sourceMessageFormatType());
 		} else {
 			throw new IllegalStateException();
 		}

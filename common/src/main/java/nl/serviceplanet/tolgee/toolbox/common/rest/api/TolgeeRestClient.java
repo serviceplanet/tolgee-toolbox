@@ -16,7 +16,8 @@
 package nl.serviceplanet.tolgee.toolbox.common.rest.api;
 
 import com.google.common.collect.ImmutableSet;
-import nl.serviceplanet.tolgee.toolbox.common.model.MessageFormatType;
+import nl.serviceplanet.tolgee.toolbox.common.model.ExportMessageFormatType;
+import nl.serviceplanet.tolgee.toolbox.common.model.ImportMessageFormatType;
 import nl.serviceplanet.tolgee.toolbox.common.model.TolgeeImportLanguage;
 import nl.serviceplanet.tolgee.toolbox.common.model.TolgeeNamespace;
 import nl.serviceplanet.tolgee.toolbox.common.model.TolgeeProjectLanguage;
@@ -67,7 +68,7 @@ public interface TolgeeRestClient {
 						  String tolgeeMessageFileName,
 						  String namespace,
 						  Locale locale,
-						  MessageFormatType formatType) throws IOException;
+						  ImportMessageFormatType formatType) throws IOException;
 
 	/**
 	 * Lists all the entries in Tolgees importer for a project.
@@ -132,7 +133,7 @@ public interface TolgeeRestClient {
 				long projectId,
 				Locale locale,
 				String namespace,
-				MessageFormatType messageFormatType,
+				ExportMessageFormatType messageFormatType,
 				Path savePath) throws IOException;
 
 }

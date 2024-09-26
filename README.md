@@ -54,6 +54,8 @@ files = "Messages_${locale separator=underscore, region_case=lower}.properties"
 [[projects.sources]]
 # Select a single source file (without using a placeholder).
 files = "Messages.properties"
+# Message format to Import (as this is a project-source). For possible types see enum ImportMessageFormatType
+type = "PROPERTIES_JAVA"
 # The locale is mandatory if there is no placeholder from which a locale can be extracted 
 # (i.e. no tag such as "${locale separator=underscore, region_case=lower}"). Must be specified as a IETF BCP 47 
 # language tag string.
@@ -63,8 +65,7 @@ locale = "nl-NL"
 [[projects.targets]]
 # Pattern used to create message target files. 
 files = "foo-directory_${locale separator=dash, region_case=upper}/Messages.properties"
-# Message format to create. Possible types: "JSON", "XLIFF", "PO", "APPLE_STRINGS_STRINGSDICT", "APPLE_XLIFF", 
-# "ANDROID_XML", "FLUTTER_ARB" "PROPERTIES"
+# Message format to Export (as this is a project-target). For possible types see enum ExportMessageFormatType
 type = "PROPERTIES"
 # Do not create translation files for these locales. Useful if for example there is a base language without a 
 # tag in the file name such as "Messages.properties". Must contain IETF BCP 47 language tag strings.
@@ -73,6 +74,7 @@ excluded_locales = ["nl-NL"]
 [[projects.targets]]
 # Select a single target file (without using a placeholder).
 files = "Messages.properties"
+# Message format to Export (as this is a project-target). For possible types see enum ExportMessageFormatType
 type = "PROPERTIES"
 # The locale is mandatory if there is no placeholder from which a locale can be extracted 
 # (for example "${locale_underscore_lower}")
@@ -151,8 +153,7 @@ locale = "en-US"
 [[projects.targets]]
 # Pattern used to create message target files. 
 files = "Messages_${locale separator=underscore, region_case=upper}.properties"
-# Message format to create. Possible types: "JSON", "XLIFF", "PO", "APPLE_STRINGS_STRINGSDICT", "APPLE_XLIFF", 
-# "ANDROID_XML", "FLUTTER_ARB" "PROPERTIES"
+# Message format to Export (as this is a project-target). For possible types see enum ExportMessageFormatType
 type = "PROPERTIES"
 ```
 
@@ -170,27 +171,33 @@ locale = "en-US"
 [[projects.targets]]
 # Pattern used to create message target files. 
 files = "Messages_${locale separator=underscore, region_case=upper}.properties"
-# Message format to create. Possible types: "JSON", "XLIFF", "PO", "APPLE_STRINGS_STRINGSDICT", "APPLE_XLIFF", 
-# "ANDROID_XML", "FLUTTER_ARB" "PROPERTIES"
+# Message format to Export (as this is a project-target). For possible types see enum ExportMessageFormatType
 type = "PROPERTIES"
 ```
 
 Push (upload) translation files to Tolgee. This is similar to using the "Import" function in Tolgee:
 
 ```shell
-$ cd my-project
 $ export TOLGEE_TOOLBOX_API_KEY=<YOUR SUPER SECRET TOLGEE API KEY>
-$ tolgee-toolbox push
+$ tolgee-toolbox push --base-path ~/my-project
+```
+Note: Tolgee-toolbox will use the base-path (or the current directory, if omitted) to search the directory-tree for the tolgee-toolbox.toml file.
+
+You can now navigate to the "Import" webpage of the Tolgee project and complete the import. 
+
+Use 'push-single-step' instead to skip the manual confirmation in the Tolgee web-interface.
+
+```shell
+$ export TOLGEE_TOOLBOX_API_KEY=<YOUR SUPER SECRET TOLGEE API KEY>
+$ tolgee-toolbox push-single-step --base-path ~/my-project
 ```
 
-You can now navigate to the "Import" page of the Tolgee project and complete the import. 
 
 Pull (download) all translations from Tolgee and update the local translation files. This is similar to using the "Export" function in Tolgee.
 
 ```shell
-$ cd my-project
 $ export TOLGEE_TOOLBOX_API_KEY=<YOUR SUPER SECRET TOLGEE API KEY>
-$ tolgee-toolbox pull
+$ tolgee-toolbox pull --base-path ~/my-project
 ```
 
 # Development 

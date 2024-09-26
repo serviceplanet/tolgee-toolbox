@@ -22,7 +22,8 @@ import com.google.gson.Gson;
 import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
 import nl.serviceplanet.tolgee.toolbox.common.config.api.ConfigService;
-import nl.serviceplanet.tolgee.toolbox.common.model.MessageFormatType;
+import nl.serviceplanet.tolgee.toolbox.common.model.ExportMessageFormatType;
+import nl.serviceplanet.tolgee.toolbox.common.model.ImportMessageFormatType;
 import nl.serviceplanet.tolgee.toolbox.common.model.TolgeeImportLanguage;
 import nl.serviceplanet.tolgee.toolbox.common.model.TolgeeNamespace;
 import nl.serviceplanet.tolgee.toolbox.common.model.TolgeeProjectLanguage;
@@ -134,7 +135,7 @@ public final class GsonTolgeeRestClient implements TolgeeRestClient {
 								 String tolgeeMessageFileName,
 								 String namespace,
 								 Locale locale,
-								 MessageFormatType formatType) throws IOException {
+								 ImportMessageFormatType formatType) throws IOException {
 		log.debug("Uploading single-step-import entry.");
 
 		try (CloseableHttpClient httpClient = createHttpClient()) {
@@ -147,12 +148,12 @@ public final class GsonTolgeeRestClient implements TolgeeRestClient {
 			fileMapping.setFileName(tolgeeMessageFileName);
 			fileMapping.setNamespace(namespace);
 			fileMapping.setLanguageTag(locale.toLanguageTag());
-			fileMapping.setFormat(SingleStepImportReq.FileMapping.Format.fromMessageFormatType(formatType));
+			fileMapping.setFormat(formatType);
 
 			SingleStepImportReq.Params reqParams = new SingleStepImportReq.Params();
 			reqParams.setForceMode(SingleStepImportReq.Params.ForceMode.OVERRIDE);
 			reqParams.setOverrideKeyDescriptions(false);
-			reqParams.setConvertPlaceholdersToIcu(formatType == MessageFormatType.PROPERTIES_ICU);
+			reqParams.setConvertPlaceholdersToIcu(formatType.name().endsWith("_ICU"));
 			reqParams.setFileMappings(List.of(fileMapping));
 			reqParams.setTagNewKeys(List.of());
 			reqParams.setRemoveOtherKeys(false);
@@ -323,7 +324,7 @@ public final class GsonTolgeeRestClient implements TolgeeRestClient {
 					   long projectId,
 					   Locale locale,
 					   String namespace,
-					   MessageFormatType messageFormatType,
+					   ExportMessageFormatType messageFormatType,
 					   Path savePath) throws IOException {
 		log.debug("Retrieving export project for id {}.", projectId);
 
@@ -436,12 +437,12 @@ public final class GsonTolgeeRestClient implements TolgeeRestClient {
 				}
 
 				throw new TolgeeServerCommunicationException(String.format(
-						"Tolgee import API responded request unsuccessful (HTTP code %s) (%s). Error details: %s",
+						"Tolgee API responded request unsuccessful (HTTP code %s) (%s). Error details: %s",
 						response.getCode(), reference, responseBody));
 			}
 
 			throw new TolgeeServerCommunicationException(String.format(
-					"Tolgee import API responded request unsuccessful (HTTP code %s) (%s).",
+					"Tolgee API responded request unsuccessful (HTTP code %s) (%s).",
 					response.getCode(), reference));
 		}
 	}

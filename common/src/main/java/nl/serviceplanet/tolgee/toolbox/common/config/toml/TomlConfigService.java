@@ -25,7 +25,9 @@ import nl.serviceplanet.tolgee.toolbox.common.config.api.ConfigService;
 import nl.serviceplanet.tolgee.toolbox.common.config.api.Project;
 import nl.serviceplanet.tolgee.toolbox.common.config.api.ProjectFile;
 import nl.serviceplanet.tolgee.toolbox.common.config.api.ProjectFilesDefinition;
-import nl.serviceplanet.tolgee.toolbox.common.model.MessageFormatType;
+import nl.serviceplanet.tolgee.toolbox.common.model.ExportMessageFormatType;
+import nl.serviceplanet.tolgee.toolbox.common.model.ImportMessageFormatType;
+import nl.serviceplanet.tolgee.toolbox.common.model.ProjectType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tomlj.Toml;
@@ -118,7 +120,7 @@ public final class TomlConfigService extends AbstractConfigService implements Co
 	private static final String TOML_PROJECTS_SRC_TAR_LOCALE = "locale";
 
 	private static final String TOML_PROJECTS_EXCLUDED_LOCALES = "excluded_locales";
-	
+
 	/**
 	 * Creates {@link Project} instances based on the supplied {@code configFileHierarchy}. Only the projects for the
 	 * top level config in the hierarchy are created. The other config files are used to override configs such as
@@ -169,14 +171,14 @@ public final class TomlConfigService extends AbstractConfigService implements Co
 
 			Long projectId = projectTable.getLong(TOML_PROJECTS_TOLGEE_ID);
 			if (projectId == null) {
-				throw new IllegalArgumentException(String.format("Config file '%s' is missing '%s'.", 
+				throw new IllegalArgumentException(String.format("Config file '%s' is missing '%s'.",
 						deepestConfig, TOML_PROJECTS_TOLGEE_ID));
 			}
 			if (!projectIds.add(projectId)) {
 				throw new IllegalArgumentException(String.format("Config file '%s' contains duplicate '%s': %s.",
 						deepestConfig, TOML_PROJECTS_TOLGEE_ID, projectId));
 			}
-			
+
 			String namespace = projectTable.getString(TOML_PROJECTS_NAMESPACE);
 
 			projects.add(new Project(
@@ -185,40 +187,53 @@ public final class TomlConfigService extends AbstractConfigService implements Co
 					missingNamespaceFail,
 					namespace,
 					projectId,
-					toProjectFiles(projectTable, TOML_PROJECTS_SOURCES),
-					toProjectFiles(projectTable, TOML_PROJECTS_TARGETS)));
+					toProjectFiles(projectTable, ProjectType.SOURCE),
+					toProjectFiles(projectTable, ProjectType.TARGET)));
 		}
 
 		return projects;
 	}
-	
-	private ImmutableSet<ProjectFile> toProjectFiles(TomlTable tomlTable, String arrayName) {
-		TomlArray sourcesArray = tomlTable.getArrayOrEmpty(arrayName);
-		ImmutableSet.Builder<ProjectFile> projectSources = ImmutableSet.builderWithExpectedSize(sourcesArray.size());
-		for (int y = 0; y < sourcesArray.size(); y++) {
-			TomlTable sources = sourcesArray.getTable(y);
-			
-			String files = sources.getString(TOML_PROJECTS_SRC_TAR_FILES);
-			MessageFormatType messageFormatType = MessageFormatType.valueOf(sources.getString(TOML_PROJECTS_SRC_TAR_TYPE));
 
-			Locale locale = null;
-			String localeString = sources.getString(TOML_PROJECTS_SRC_TAR_LOCALE);
-			if (!Strings.isNullOrEmpty(localeString)) {
-				locale = Locale.forLanguageTag(localeString);
+	private ImmutableSet<ProjectFile> toProjectFiles(TomlTable tomlTable, ProjectType projectType) {
+		String arrayName = switch (projectType) {
+			case SOURCE -> TOML_PROJECTS_SOURCES;
+			case TARGET -> TOML_PROJECTS_TARGETS;
+		};
+		TomlArray projectFilesArray = tomlTable.getArrayOrEmpty(arrayName);
+		ImmutableSet.Builder<ProjectFile> projectFiles = ImmutableSet.builderWithExpectedSize(projectFilesArray.size());
+		for (int y = 0; y < projectFilesArray.size(); y++) {
+			TomlTable projectFileElement = projectFilesArray.getTable(y);
+
+			String files = projectFileElement.getString(TOML_PROJECTS_SRC_TAR_FILES);
+			String messageFormatType = projectFileElement.getString(TOML_PROJECTS_SRC_TAR_TYPE);
+
+			ImportMessageFormatType sourceMessageFormatType = null;
+			ExportMessageFormatType targetMessageFormatType = null;
+
+			switch (projectType) {
+				case SOURCE:
+					sourceMessageFormatType = ImportMessageFormatType.valueOf(messageFormatType);
+					break;
+				case TARGET:
+					targetMessageFormatType = ExportMessageFormatType.valueOf(messageFormatType);
+					break;
 			}
 
-			ImmutableSet<Locale> excludedLocales =
-					parseTomlLocaleArray(sources.getArrayOrEmpty(TOML_PROJECTS_EXCLUDED_LOCALES));
+			String localeString = projectFileElement.getString(TOML_PROJECTS_SRC_TAR_LOCALE);
+			Locale locale = Strings.isNullOrEmpty(localeString) ? null : Locale.forLanguageTag(localeString);
 
-			ProjectFilesDefinition projectFilesDefinition = 
+			ImmutableSet<Locale> excludedLocales =
+					parseTomlLocaleArray(projectFileElement.getArrayOrEmpty(TOML_PROJECTS_EXCLUDED_LOCALES));
+
+			ProjectFilesDefinition projectFilesDefinition =
 					new ProjectFilesDefinition(files, parseLocalePlaceholder(files));
 
 			// FIXME: Check if combination is valid. Otherwise throw IllegalArgumentException.
-			
-			projectSources.add(new ProjectFile(projectFilesDefinition, messageFormatType, locale, excludedLocales));
+
+			projectFiles.add(new ProjectFile(projectFilesDefinition, sourceMessageFormatType, targetMessageFormatType, locale, excludedLocales));
 		}
-		
-		return projectSources.build();		
+
+		return projectFiles.build();
 	}
 
 	/**

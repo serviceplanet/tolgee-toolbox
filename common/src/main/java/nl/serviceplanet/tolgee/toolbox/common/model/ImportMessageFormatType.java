@@ -16,18 +16,36 @@
 package nl.serviceplanet.tolgee.toolbox.common.model;
 
 /**
- * Message format messageFormatType as defined by Tolgee.
+ * Message format messageFormatType, for the Import endpoint, as defined by Tolgee.
  *
  * @author Jasper Siepkes <siepkes@serviceplanet.n>
  */
-public enum MessageFormatType {
-	JSON,
-	PO,
-	APPLE_STRINGS_STRINGSDICT,
+public enum ImportMessageFormatType {
+	JSON_ICU,
+	JSON_JAVA,
+	JSON_PHP,
+	JSON_RUBY,
+	JSON_C,
+	PO_PHP,
+	PO_C,
+	PO_JAVA,
+	PO_ICU,
+	PO_RUBY,
+	STRINGS,
+	STRINGSDICT,
 	APPLE_XLIFF,
-	ANDROID_XML,
-	FLUTTER_ARB,
 	PROPERTIES_ICU,
 	PROPERTIES_JAVA,
-	XLIFF;
+	PROPERTIES_UNKNOWN,
+	ANDROID_XML,
+	FLUTTER_ARB,
+	YAML_RUBY,
+	YAML_JAVA,
+	YAML_ICU,
+	YAML_PHP,
+	YAML_UNKNOWN,
+	XLIFF_ICU,
+	XLIFF_JAVA,
+	XLIFF_PHP,
+	XLIFF_RUBY;
 }

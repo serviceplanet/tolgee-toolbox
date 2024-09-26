@@ -1,6 +1,7 @@
 package nl.serviceplanet.tolgee.toolbox.common.rest.api.json;
 
-import nl.serviceplanet.tolgee.toolbox.common.model.MessageFormatType;
+import nl.serviceplanet.tolgee.toolbox.common.model.ExportMessageFormatType;
+import nl.serviceplanet.tolgee.toolbox.common.model.ImportMessageFormatType;
 
 import java.util.List;
 
@@ -67,24 +68,9 @@ public final class SingleStepImportReq {
 	}
 
 	public final static class FileMapping {
-		public enum Format {
-			JSON_ICU, JSON_JAVA, JSON_PHP, JSON_RUBY, JSON_C, PO_PHP, PO_C, PO_JAVA, PO_ICU, PO_RUBY,
-			STRINGS, STRINGSDICT, APPLE_XLIFF, PROPERTIES_ICU, PROPERTIES_JAVA, PROPERTIES_UNKNOWN,
-			ANDROID_XML, FLUTTER_ARB, YAML_RUBY, YAML_JAVA, YAML_ICU, YAML_PHP, YAML_UNKNOWN, XLIFF_ICU,
-			XLIFF_JAVA, XLIFF_PHP, XLIFF_RUBY;
-
-			public static Format fromMessageFormatType(MessageFormatType formatType) {
-				return switch (formatType) {
-					case PROPERTIES_ICU -> Format.PROPERTIES_ICU;
-					case PROPERTIES_JAVA -> Format.PROPERTIES_JAVA;
-					default -> throw new UnsupportedOperationException("MessageFormatType: " + formatType);
-				};
-			}
-		}
-
 		private String fileName;
 		private String namespace;
-		private Format format;
+		private ImportMessageFormatType format;
 		private String languageTag;
 
 		public String getFileName() {
@@ -103,11 +89,11 @@ public final class SingleStepImportReq {
 			this.namespace = namespace;
 		}
 
-		public Format getFormat() {
+		public ImportMessageFormatType getFormat() {
 			return format;
 		}
 
-		public void setFormat(Format format) {
+		public void setFormat(ImportMessageFormatType format) {
 			this.format = format;
 		}
 

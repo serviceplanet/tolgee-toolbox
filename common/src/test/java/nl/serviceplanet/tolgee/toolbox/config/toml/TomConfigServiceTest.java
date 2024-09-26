@@ -15,20 +15,18 @@
  */
 package nl.serviceplanet.tolgee.toolbox.config.toml;
 
-import com.google.common.collect.ImmutableCollection;
 import com.google.common.collect.ImmutableSet;
-import nl.serviceplanet.tolgee.toolbox.common.config.api.LocalePlaceholder;
 import nl.serviceplanet.tolgee.toolbox.common.config.api.Project;
 import nl.serviceplanet.tolgee.toolbox.common.config.api.ProjectFile;
 import nl.serviceplanet.tolgee.toolbox.common.config.api.ProjectFilesDefinition;
 import nl.serviceplanet.tolgee.toolbox.common.config.toml.TomlConfigService;
-import nl.serviceplanet.tolgee.toolbox.common.model.MessageFormatType;
+import nl.serviceplanet.tolgee.toolbox.common.model.ExportMessageFormatType;
+import nl.serviceplanet.tolgee.toolbox.common.model.ImportMessageFormatType;
 import org.junit.jupiter.api.Test;
 
 import java.net.URI;
 import java.nio.file.Path;
 import java.util.Locale;
-import java.util.Set;
 
 import static com.google.common.truth.Truth.assertThat;
 
@@ -60,11 +58,13 @@ public final class TomConfigServiceTest {
 						"tolgee.server.backend",
 						42341,
 						ImmutableSet.of(new ProjectFile(projectSourceFiles,
-								MessageFormatType.PROPERTIES_JAVA,
+								ImportMessageFormatType.PROPERTIES_JAVA,
+								null,
 								Locale.of("nl", "NL"),
 								ImmutableSet.of())),
 						ImmutableSet.of(new ProjectFile(projectTargetFiles,
-								MessageFormatType.PROPERTIES_JAVA,
+								null,
+								ExportMessageFormatType.PROPERTIES,
 								Locale.of("nl", "NL"),
 								ImmutableSet.of())))
 		);

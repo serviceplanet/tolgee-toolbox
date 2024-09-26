@@ -15,5 +15,5 @@ locale = "nl-NL"
 
 [[projects.targets]]
 files = "Messages.properties"
-type = "PROPERTIES_JAVA"
+type = "PROPERTIES"
 locale = "nl-NL"
