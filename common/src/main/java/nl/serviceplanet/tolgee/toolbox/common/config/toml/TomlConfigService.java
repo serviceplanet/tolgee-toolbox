@@ -70,6 +70,12 @@ public final class TomlConfigService extends AbstractConfigService implements Co
 		ImmutableSet.Builder<Project> projects = ImmutableSet.builder();
 
 		for (Path configFile : configFiles) {
+			if (configFile.toString().contains("/target/classes/")) {
+				// Prevents tolgee-toolbox from picking up config files copied by Maven to the Java build target path.
+				log.trace("Ignoring build artifact path '{}'.", configFile);
+				continue;
+			}
+			
 			List<Path> configFileHierarchy = new ArrayList<>();
 
 			// Find all .tolgee-toolbox files which are in parent directories of this .tolgee-toolbox file.
