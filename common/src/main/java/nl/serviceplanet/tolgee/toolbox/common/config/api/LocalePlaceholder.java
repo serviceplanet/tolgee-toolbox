@@ -44,14 +44,16 @@ public record LocalePlaceholder(String placeholder,
 
 		localeString.append(locale.getLanguage().toLowerCase());
 
-		switch (separator) {
-			case Dash -> localeString.append("-");
-			case Underscore -> localeString.append("_");
-		}
+		if (!locale.getCountry().isBlank()) {
+			switch (separator) {
+				case Dash -> localeString.append("-");
+				case Underscore -> localeString.append("_");
+			}
 
-		switch (regionCase) {
-			case Lower -> localeString.append(locale.getCountry().toLowerCase());
-			case Upper -> localeString.append(locale.getCountry().toUpperCase());
+			switch (regionCase) {
+				case Lower -> localeString.append(locale.getCountry().toLowerCase());
+				case Upper -> localeString.append(locale.getCountry().toUpperCase());
+			}
 		}
 
 		return localeString.toString();

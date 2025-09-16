@@ -4,9 +4,7 @@
 
 **While functional, at this point it is mostly a useful prototype.**
 
-Let's start with the obvious question; How does this application differ from the (excellent!) [tolgee-cli](https://github.com/tolgee/tolgee-cli) tool? The `tolgee-cli` tool works great for front-end development but didn't really fit our Maven multi-module projects well (at the time of writing). 
-
-Conceptually this tool also works a bit different. This tool uploads the entire message file to the "Import" functionality in Tolgee. Whereas the `tolgee-cli` tool works directly on the translation entries in Tolgee.
+Let's start with the obvious question; How does this application differ from the (excellent!) [tolgee-cli](https://github.com/tolgee/tolgee-cli) tool? The `tolgee-cli` tool works great for front-end development but didn't really fit our (more classic) Maven multi-module projects well (at the time of writing).
 
 The minimum supported Java version by this tool is 21.
 
@@ -154,7 +152,7 @@ locale = "en-US"
 # Pattern used to create message target files. 
 files = "Messages_${locale separator=underscore, region_case=upper}.properties"
 # Message format to Export (as this is a project-target). For possible types see enum ExportMessageFormatType
-type = "PROPERTIES"
+type = "PROPERTIES_JAVA"
 ```
 
 `my-project/module-b/src/main/resources/tolgee-toolbox.toml`:
@@ -174,6 +172,12 @@ files = "Messages_${locale separator=underscore, region_case=upper}.properties"
 # Message format to Export (as this is a project-target). For possible types see enum ExportMessageFormatType
 type = "PROPERTIES"
 ```
+
+This tool supports two ways of uploading translations;
+
+* Upload the entries of all message files to the "Import" functionality in Tolgee.
+  * In which case you need to manually review and then import the messages via the web UI.
+* Upload the entries of all message files via the single step import API.
 
 Push (upload) translation files to Tolgee. This is similar to using the "Import" function in Tolgee:
 
@@ -210,5 +214,6 @@ $ podman run -v tolgee_data:/data/ -p 8085:8080 tolgee/tolgee
 
 # Known gotchas / issues / limitations
 
+* Error messages can be cryptic. For example it assumes it is correctly configured in a lot of places.
 * Tolgee by default supports up to 100 entries in its importer. If you exceed this you will get an HTTP 400 error. See Tolgee's [ImportService.kt](https://github.com/tolgee/tolgee-platform/blob/c39d3dbb5351ffc7d237f1a854d146eb6663d851/backend/data/src/main/kotlin/io/tolgee/service/dataImport/ImportService.kt#L89-L91).
 * `toolgee-toolbox pull` will fail when there are no translations yet for a language. Tolgee will return a HTTP 400 (bad request) when trying to export.
