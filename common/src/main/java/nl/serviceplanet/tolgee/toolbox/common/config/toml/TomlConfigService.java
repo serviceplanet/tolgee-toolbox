@@ -108,6 +108,8 @@ public final class TomlConfigService extends AbstractConfigService implements Co
 	private static final String TOML_PROJECTS_TOLGEE_ID = "tolgee.id";
 	
 	private static final String TOML_PROJECTS_NAMESPACE = "tolgee.namespace";
+
+	private static final String TOML_PROJECTS_SRC_UNIVERSAL_PLACEHOLDERS = "universal_placeholders_enabled";
 	
 	private static final String TOML_PROJECTS_SOURCES = "sources";
 
@@ -180,6 +182,12 @@ public final class TomlConfigService extends AbstractConfigService implements Co
 			}
 
 			String namespace = projectTable.getString(TOML_PROJECTS_NAMESPACE);
+			
+			Boolean useUniversalPlaceholders = projectTable.getBoolean(TOML_PROJECTS_SRC_UNIVERSAL_PLACEHOLDERS);
+			if (useUniversalPlaceholders == null) {
+				throw new IllegalArgumentException(String.format("Config file '%s' is missing '%s'.", 
+						deepestConfig, TOML_PROJECTS_SRC_UNIVERSAL_PLACEHOLDERS));
+			}
 
 			projects.add(new Project(
 					deepestConfig.getParent(),
@@ -187,6 +195,7 @@ public final class TomlConfigService extends AbstractConfigService implements Co
 					missingNamespaceFail,
 					namespace,
 					projectId,
+					useUniversalPlaceholders,
 					toProjectFiles(projectTable, ProjectType.SOURCE),
 					toProjectFiles(projectTable, ProjectType.TARGET)));
 		}

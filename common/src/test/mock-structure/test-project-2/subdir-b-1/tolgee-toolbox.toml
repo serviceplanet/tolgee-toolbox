@@ -2,3 +2,5 @@
 # Location of Tolgee REST API.
 api.url = "http://127.0.0.1:8080"
 
+[[projects]]
+universal_placeholders_enabled = false

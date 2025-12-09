@@ -57,6 +57,7 @@ public final class TomConfigServiceTest {
 						true,
 						"tolgee.server.backend",
 						42341,
+						true,
 						ImmutableSet.of(new ProjectFile(projectSourceFiles,
 								ImportMessageFormatType.PROPERTIES_JAVA,
 								null,

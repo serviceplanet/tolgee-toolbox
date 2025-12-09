@@ -31,6 +31,7 @@ public record Project(
 		boolean missingNamespaceFail,
 		String namespace,
 		long tolgeeProjectId,
+		boolean universalPlaceholdersEnabled,
 		ImmutableSet<ProjectFile> projectSources,
 		ImmutableSet<ProjectFile> projectTargets
 ) {}

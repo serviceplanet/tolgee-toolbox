@@ -15,7 +15,6 @@
  */
 package nl.serviceplanet.tolgee.toolbox.common.rest.api.json;
 
-import nl.serviceplanet.tolgee.toolbox.common.model.ExportMessageFormatType;
 import nl.serviceplanet.tolgee.toolbox.common.model.ImportMessageFormatType;
 
 import java.util.List;

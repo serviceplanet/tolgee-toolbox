@@ -21,7 +21,6 @@ package nl.serviceplanet.tolgee.toolbox.common.model;
  * @author Jasper Siepkes <siepkes@serviceplanet.n>
  */
 public enum ImportMessageFormatType {
-	JSON_ICU,
 	JSON_JAVA,
 	JSON_PHP,
 	JSON_RUBY,
@@ -29,22 +28,18 @@ public enum ImportMessageFormatType {
 	PO_PHP,
 	PO_C,
 	PO_JAVA,
-	PO_ICU,
 	PO_RUBY,
 	STRINGS,
 	STRINGSDICT,
 	APPLE_XLIFF,
-	PROPERTIES_ICU,
 	PROPERTIES_JAVA,
 	PROPERTIES_UNKNOWN,
 	ANDROID_XML,
 	FLUTTER_ARB,
 	YAML_RUBY,
 	YAML_JAVA,
-	YAML_ICU,
 	YAML_PHP,
 	YAML_UNKNOWN,
-	XLIFF_ICU,
 	XLIFF_JAVA,
 	XLIFF_PHP,
 	XLIFF_RUBY;

@@ -140,12 +140,21 @@ api.url = "http://127.0.0.1:8080"
 `my-project/module-a/src/main/resources/tolgee-toolbox.toml`:
 
 ```toml
+[[projects]]
+tolgee.id = 42341
+# Enable or disable the use of Tolgee universal ICU placeholders. Affects for example the single step import, 
+# but not the multistep import. The multistep lets you select this option in the web interface. This option is mandatory 
+# to prevent accidentally messing up your Tolgee instance.
+# See also: https://docs.tolgee.io/platform/translation_process/tolgee_universal_icu_placeholders
+universal_placeholders_enabled = true
+
 [[projects.sources]]
 # Select a single source file (without using a placeholder).
 files = "Messages.properties"
 # The locale is mandatory if there is no placeholder from which a locale can be extracted 
 # (i.e. no tag such as "${locale separator=underscore, region_case=lower}")
 locale = "en-US"
+type = "PROPERTIES_JAVA"
 
 # Specifies where the pulled (downloaded) messages from the Tolgee's server export functionality are written to.
 [[projects.targets]]
@@ -164,13 +173,14 @@ files = "Messages.properties"
 # The locale must be specified (and only be specified) if there is no placeholder from which a locale can be extracted 
 # (i.e. no tag such as "${locale separator=underscore, region_case=lower}")
 locale = "en-US"
+type = "PROPERTIES_JAVA"
 
 # Specifies where the pulled (downloaded) messages from the Tolgee's server export functionality are written to.
 [[projects.targets]]
 # Pattern used to create message target files. 
 files = "Messages_${locale separator=underscore, region_case=upper}.properties"
 # Message format to Export (as this is a project-target). For possible types see enum ExportMessageFormatType
-type = "PROPERTIES"
+type = "PROPERTIES_JAVA"
 ```
 
 This tool supports two ways of uploading translations;

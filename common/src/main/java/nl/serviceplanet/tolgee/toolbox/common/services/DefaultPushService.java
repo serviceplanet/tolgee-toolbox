@@ -105,6 +105,7 @@ public final class DefaultPushService extends AbstractService implements PushSer
 			// to traceability in the UI but would be traceable in the tolgee-service database / log-files.
 			String generatedFileName = UUID.randomUUID() + "_" + messageFile.path().getFileName();
 
+			// TODO: The convert placeholder setting should be configurable in the tolgee-toolbox.toml file.
 			tolgeeRestClient.singleStepImport(
 					project.tolgeeApiURI(),
 					configService.getTolgeeApiKey(),
@@ -113,7 +114,8 @@ public final class DefaultPushService extends AbstractService implements PushSer
 					generatedFileName,
 					project.namespace(),
 					messageFile.locale(),
-					messageFile.messageFormatType());
+					messageFile.messageFormatType(),
+					true);
 		}
 	}
 

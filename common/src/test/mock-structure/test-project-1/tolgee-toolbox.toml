@@ -7,6 +7,7 @@ missing_namespace_fail = true
 [[projects]]
 tolgee.id = 42341
 tolgee.namespace = "tolgee.server.backend"
+universal_placeholders_enabled = true
 
 [[projects.sources]]
 files = "Messages.properties"

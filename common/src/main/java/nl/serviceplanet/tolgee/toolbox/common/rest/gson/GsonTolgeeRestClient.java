@@ -135,7 +135,14 @@ public final class GsonTolgeeRestClient implements TolgeeRestClient {
 								 String tolgeeMessageFileName,
 								 String namespace,
 								 Locale locale,
-								 ImportMessageFormatType formatType) throws IOException {
+								 ImportMessageFormatType formatType,
+								 boolean useUniversalPlaceholders) throws IOException {
+		if (useUniversalPlaceholders) {
+			throw new IllegalArgumentException("Tolgee universal placeholders are enabled, but Tolgee's single step " +
+					"importer API can't handle this and will assume you don't use universal placeholders. " +
+					"See: https://github.com/tolgee/tolgee-platform/issues/3344");
+		}
+		
 		log.debug("Uploading single-step-import entry.");
 
 		try (CloseableHttpClient httpClient = createHttpClient()) {
@@ -153,7 +160,7 @@ public final class GsonTolgeeRestClient implements TolgeeRestClient {
 			SingleStepImportReq.Params reqParams = new SingleStepImportReq.Params();
 			reqParams.setForceMode(SingleStepImportReq.Params.ForceMode.OVERRIDE);
 			reqParams.setOverrideKeyDescriptions(false);
-			reqParams.setConvertPlaceholdersToIcu(formatType.name().endsWith("_ICU"));
+			reqParams.setConvertPlaceholdersToIcu(useUniversalPlaceholders);
 			reqParams.setFileMappings(List.of(fileMapping));
 			reqParams.setTagNewKeys(List.of());
 			reqParams.setRemoveOtherKeys(false);

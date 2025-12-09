@@ -68,7 +68,8 @@ public interface TolgeeRestClient {
 						  String tolgeeMessageFileName,
 						  String namespace,
 						  Locale locale,
-						  ImportMessageFormatType formatType) throws IOException;
+						  ImportMessageFormatType formatType,
+						  boolean convertPlaceholders) throws IOException;
 
 	/**
 	 * Lists all the entries in Tolgees importer for a project.
