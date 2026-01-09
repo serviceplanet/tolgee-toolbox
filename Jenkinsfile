@@ -113,8 +113,10 @@ pipeline {
                             // -U Flag forces re-resolution of all artifacts even if they couldn't be found previously.
                             // -B Flag enables batch mode. Disables spamming the logs with download progress among things.
                             //
-                            // Version of Sonar scanner can be specified in Jenkins.
-                            sh 'mvn clean install sonar:sonar deploy -Dsonar.branch.name=${GIT_BRANCH} -U -B -s $MAVEN_SETTINGS_XML -f $POM_FILE '
+                            // Somewhat confusing is the configured 'SonarQube Scanner installations' in Jenkins are not used
+                            // when using Maven. These are only used for projects which do not have build tool integration.
+                            // For example C++ or PHP projects.
+                            sh 'mvn clean install org.sonarsource.scanner.maven:sonar-maven-plugin:5.5.0.6356:sonar deploy -Dsonar.kubernetes.activate=false -Dsonar.scanner.os=linux -Dsonar.scanner.javaExePath=java -Dsonar.branch.name=${GIT_BRANCH} -U -B -s $MAVEN_SETTINGS_XML -f $POM_FILE '
                         }
                     }
                 }
