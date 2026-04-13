@@ -332,6 +332,7 @@ public final class GsonTolgeeRestClient implements TolgeeRestClient {
 					   Locale locale,
 					   String namespace,
 					   ExportMessageFormatType messageFormatType,
+					   String structureDelimiter,
 					   Path savePath) throws IOException {
 		log.debug("Retrieving export project for id {}.", projectId);
 
@@ -345,6 +346,9 @@ public final class GsonTolgeeRestClient implements TolgeeRestClient {
 			exportJson.setFormat(messageFormatType.toString());
 			if (!Strings.isNullOrEmpty(namespace)) {
 				exportJson.setFilterNamespace(ImmutableList.of(namespace));
+			}
+			if (structureDelimiter != null) {
+				exportJson.setStructureDelimiter(structureDelimiter);
 			}
 
 			HttpEntity stringEntity = new StringEntity(gson.toJson(exportJson), ContentType.APPLICATION_JSON);

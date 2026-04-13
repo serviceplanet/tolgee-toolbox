@@ -55,11 +55,11 @@ public final class TomlConfigService extends AbstractConfigService implements Co
 	private static final Logger log = LoggerFactory.getLogger(TomlConfigService.class);
 
 	private static final String TOLGEE_TOOLBOX = "tolgee-toolbox.toml";
-	
+
 	@Inject
 	public TomlConfigService() {
 	}
-	
+
 	/**
 	 * {@inheritDoc}
 	 */
@@ -77,7 +77,7 @@ public final class TomlConfigService extends AbstractConfigService implements Co
 				log.trace("Ignoring build artifact path '{}'.", configFile);
 				continue;
 			}
-			
+
 			List<Path> configFileHierarchy = new ArrayList<>();
 
 			// Find all .tolgee-toolbox files which are in parent directories of this .tolgee-toolbox file.
@@ -100,24 +100,26 @@ public final class TomlConfigService extends AbstractConfigService implements Co
 
 		return projects.build();
 	}
-	
+
 	private static final String TOML_TOLGEE_API_URL = "tolgee.api.url";
-	
+
 	private static final String TOML_GENERAL_MISSING_NAME_SPACE_FAIL = "general.missing_namespace_fail";
-	
+
 	private static final String TOML_PROJECTS_TOLGEE_ID = "tolgee.id";
-	
+
 	private static final String TOML_PROJECTS_NAMESPACE = "tolgee.namespace";
 
 	private static final String TOML_PROJECTS_SRC_UNIVERSAL_PLACEHOLDERS = "universal_placeholders_enabled";
-	
+
 	private static final String TOML_PROJECTS_SOURCES = "sources";
 
 	private static final String TOML_PROJECTS_TARGETS = "targets";
-	
+
 	private static final String TOML_PROJECTS_SRC_TAR_FILES = "files";
 
 	private static final String TOML_PROJECTS_SRC_TAR_TYPE = "type";
+
+	private static final String TOML_PROJECTS_TAR_STRUCTURE_DELIMITER = "structured_delimited";
 
 	private static final String TOML_PROJECTS_SRC_TAR_LOCALE = "locale";
 
@@ -182,10 +184,10 @@ public final class TomlConfigService extends AbstractConfigService implements Co
 			}
 
 			String namespace = projectTable.getString(TOML_PROJECTS_NAMESPACE);
-			
+
 			Boolean useUniversalPlaceholders = projectTable.getBoolean(TOML_PROJECTS_SRC_UNIVERSAL_PLACEHOLDERS);
 			if (useUniversalPlaceholders == null) {
-				throw new IllegalArgumentException(String.format("Config file '%s' is missing '%s'.", 
+				throw new IllegalArgumentException(String.format("Config file '%s' is missing '%s'.",
 						deepestConfig, TOML_PROJECTS_SRC_UNIVERSAL_PLACEHOLDERS));
 			}
 
@@ -231,6 +233,15 @@ public final class TomlConfigService extends AbstractConfigService implements Co
 			String localeString = projectFileElement.getString(TOML_PROJECTS_SRC_TAR_LOCALE);
 			Locale locale = Strings.isNullOrEmpty(localeString) ? null : Locale.forLanguageTag(localeString);
 
+			String structureDelimiter = null;
+			if (projectType == ProjectType.TARGET) {
+				// Tolgee's export API defaults 'structureDelimiter' to '.' when omitted, which silently turns flat
+				// keys into nested objects. Default to an empty string so flat keys stay flat unless the user
+				// explicitly opts in.
+				String configuredDelimiter = projectFileElement.getString(TOML_PROJECTS_TAR_STRUCTURE_DELIMITER);
+				structureDelimiter = configuredDelimiter == null ? "" : configuredDelimiter;
+			}
+
 			ImmutableSet<Locale> excludedLocales =
 					parseTomlLocaleArray(projectFileElement.getArrayOrEmpty(TOML_PROJECTS_EXCLUDED_LOCALES));
 
@@ -239,7 +250,7 @@ public final class TomlConfigService extends AbstractConfigService implements Co
 
 			// FIXME: Check if combination is valid. Otherwise throw IllegalArgumentException.
 
-			projectFiles.add(new ProjectFile(projectFilesDefinition, sourceMessageFormatType, targetMessageFormatType, locale, excludedLocales));
+			projectFiles.add(new ProjectFile(projectFilesDefinition, sourceMessageFormatType, targetMessageFormatType, structureDelimiter, locale, excludedLocales));
 		}
 
 		return projectFiles.build();

@@ -135,6 +135,7 @@ public interface TolgeeRestClient {
 				Locale locale,
 				String namespace,
 				ExportMessageFormatType messageFormatType,
+				String structureDelimiter,
 				Path savePath) throws IOException;
 
 }

@@ -61,11 +61,13 @@ public final class TomConfigServiceTest {
 						ImmutableSet.of(new ProjectFile(projectSourceFiles,
 								ImportMessageFormatType.PROPERTIES_JAVA,
 								null,
+								null,
 								Locale.of("nl", "NL"),
 								ImmutableSet.of())),
 						ImmutableSet.of(new ProjectFile(projectTargetFiles,
 								null,
 								ExportMessageFormatType.PROPERTIES,
+								"",
 								Locale.of("nl", "NL"),
 								ImmutableSet.of())))
 		);

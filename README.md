@@ -65,6 +65,10 @@ locale = "nl-NL"
 files = "foo-directory_${locale separator=dash, region_case=upper}/Messages.properties"
 # Message format to Export (as this is a project-target). For possible types see enum ExportMessageFormatType
 type = "PROPERTIES"
+# Optional. When set keys containing the delimiter are exported as nested objects (for JSON/YAML-style formats). 
+# If this option is omitted an empty string is sent to the Tolgee API so keys stay flat. Otherwise Tolgee
+# defaults to '.', which means it will nest any key in JSON, YAML, etc. containing a dot.
+# structured_delimited = "."
 # Do not create translation files for these locales. Useful if for example there is a base language without a 
 # tag in the file name such as "Messages.properties". Must contain IETF BCP 47 language tag strings.
 excluded_locales = ["nl-NL"]

@@ -29,6 +29,7 @@ import java.util.Locale;
 public record ProjectFile(ProjectFilesDefinition files,
 						  ImportMessageFormatType sourceMessageFormatType,
 						  ExportMessageFormatType targetMessageFormatType,
+						  String structureDelimiter,
 						  Locale locale,
 						  ImmutableSet<Locale> excludedLocales) {
 }

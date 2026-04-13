@@ -91,6 +91,7 @@ public final class DefaultPullService extends AbstractService implements PullSer
 						tolgeeProjectLanguage.locale(),
 						project.namespace(),
 						targetProjectFile.targetMessageFormatType(),
+						targetProjectFile.structureDelimiter(),
 						messageFilePath);
 			}
 		}
