@@ -14,8 +14,10 @@ pipeline {
     }
 
     environment {
+        PROJECT_NAME = 'tolgee-toolbox'
         MAVEN_OPTS = '-Dstyle.color=always -Djansi.force=true -Xms512m -Xmx1024m'
         POM_FILE = 'parent/pom.xml'
+        MAVEN_PARENT_ROOT = 'parent'
         POM_VERSION = readMavenPom(file: 'parent/pom.xml').getVersion()
         GIT_COMMITTER_NAME = "jenkins"
         GIT_COMMITTER_EMAIL = "jenkins@serviceplanet.nl"
@@ -77,6 +79,36 @@ pipeline {
                 always {
                     junit testResults: '**/target/surefire-reports/*.xml', allowEmptyResults: true
                 }
+            }
+        }
+
+        stage('Create and publish SBOM to Dependency-Track') {
+            options {
+                timeout(time: 10, unit: "MINUTES")
+            }
+
+            when {
+                anyOf {
+                    buildingTag()
+                    // When on master and release (ie. 'release_1.0') branches we only publish -SNAPSHOT artifacts.
+                    // This prevents trying to publish release artifacts from these branches.
+                    expression { GIT_BRANCH ==~ /(master|release_[0-9]*\.[0-9]*)/ }
+                }
+            }
+
+            steps {
+                withMaven() {
+                    configFileProvider([configFile(fileId: 'c9fdc7cf-51b3-4248-95ba-511d36cc32c2', variable: 'MAVEN_SETTINGS_XML')]) {
+                        sh 'mvn -U -B -s $MAVEN_SETTINGS_XML -f $POM_FILE org.cyclonedx:cyclonedx-maven-plugin:2.9.1:makeAggregateBom'
+                    }
+                }
+
+                dependencyTrackPublisher(
+                    artifact: "$MAVEN_PARENT_ROOT/target/bom.xml",
+                    projectName: "$PROJECT_NAME",
+                    projectVersion: "$POM_VERSION",
+                    synchronous: true
+                )
             }
         }
 
